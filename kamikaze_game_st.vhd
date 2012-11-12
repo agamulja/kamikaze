@@ -31,27 +31,15 @@ architecture arch of kamikaze_graph_st is
 	signal ship_main_x_r: unsigned(9 downto 0);
 	signal ship_main_x_reg, ship_main_x_next: unsigned(9 downto 0);
 	
-	-- ship image ROM
-	type rom_type is array(0 to SHIP_SIZE-1) of std_logic_vector(0 to SHIP_SIZE-1);
-	constant SHIP_ROM: rom_type := (
-		"0000000110000000",
-		"0000000110000000",
-		"0000001111000000",
-		"0000001111000000",
-		"0000011111100000",
-		"0000011111100000",
-		"0000111111110000",
-		"0000111111110000",
-		"0001111111111000",
-		"0001111111111000",
-		"0011111111111100",
-		"0011111111111100",
-		"0111111111111110",
-		"0111111111111110",
-		"1111111111111111",
-		"1111111111111111");
+	-- Declare ship image ROM
+	component ship_rom
+		port (
+		a: in std_logic_vector(3 downto 0);
+		spo: out std_logic_vector(15 downto 0));
+	end component;
 		
-	signal rom_addr, rom_col: unsigned(3 downto 0);
+	signal rom_addr: std_logic_vector(3 downto 0);	
+	signal rom_col: unsigned(3 downto 0);
 	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
 	signal rom_bit: std_logic;
 
@@ -59,11 +47,12 @@ architecture arch of kamikaze_graph_st is
 	signal ship_main_on: std_logic;
 	signal sq_ship_main_on: std_logic;
 	signal ship_rgb: std_logic_vector(7 downto 0);
-
+	
+	
 begin
 	pix_x <= unsigned(pixel_x);
 	pix_y <= unsigned(pixel_y);
-
+	
 	-- create a reference tick refr_tick: 1-clock tick asserted at start of v_sync
 	-- e.g., when the screen is refreshed -- speed is 60 Hz
 	refr_tick <= '1' when (pix_y = 481) and (pix_x = 0) else '0';
@@ -72,8 +61,8 @@ begin
 	process(clk, reset)
 	begin
 		if (reset='1') then
-			ship_main_y_reg <= (others=>'0');
-			ship_main_x_reg <= (others=>'0');
+			ship_main_y_reg <= to_unsigned(MAX_Y/2, 10);
+			ship_main_x_reg <= to_unsigned(MAX_X/2, 10);
 		elsif (clk'event and clk='1') then
 			ship_main_y_reg <= ship_main_y_next;
 			ship_main_x_reg <= ship_main_x_next;
@@ -92,12 +81,18 @@ begin
 					  else '0';
 		
 	-- map scan coord to ROM addr/col
-	rom_addr <= pix_y(3 downto 0) - ship_main_y_t(3 downto 0);
+	ship_main_rom : ship_rom
+			port map (
+				a => rom_addr,
+				spo => rom_data
+			);
+	
+	rom_addr <= std_logic_vector(pix_y(3 downto 0) - ship_main_y_t(3 downto 0));
 	rom_col <= pix_x(3 downto 0) - ship_main_x_l(3 downto 0);
-	rom_data <= SHIP_ROM(to_integer(rom_addr));
 	rom_bit <= rom_data(to_integer(rom_col));
 	ship_main_on <= '1' when (sq_ship_main_on = '1') and (rom_bit = '1') else '0';
 	ship_rgb <= "00011100"; -- color of the ship
+	
 	
 	-- process ship movement request
 	process(ship_main_y_reg, ship_main_x_reg, ship_main_y_t, ship_main_y_b,
