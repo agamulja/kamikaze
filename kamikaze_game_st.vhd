@@ -17,6 +17,7 @@ architecture arch of kamikaze_graph_st is
 -- x, y coordinates (0,0) to (639, 479)
 	signal pix_x, pix_y: unsigned(9 downto 0);
 	signal refr_tick: std_logic; -- 60-Hz enable tick
+	signal mod4_ref_reg, mod4_ref_next: unsigned(4 downto 0);
 	constant MAX_X: integer := 640;
 	constant MAX_Y: integer := 480;
 		
@@ -69,10 +70,12 @@ begin
 			ship_main_y_reg <= to_unsigned(MAX_Y/2, 10);
 			ship_main_x_reg <= to_unsigned(MAX_X/2, 10);
 			ship_main_orient_reg <= (others=>'0');
+			mod4_ref_reg <= (others=>'0');
 		elsif (clk'event and clk='1') then
 			ship_main_y_reg <= ship_main_y_next;
 			ship_main_x_reg <= ship_main_x_next;
 			ship_main_orient_reg <= ship_main_orient_next;
+			mod4_ref_reg <= mod4_ref_next;
 		end if;
 	end process;
 		
@@ -122,22 +125,26 @@ begin
 	ship_rgb <= "00011100"; -- color of the ship
 	
 	
+	
 	-- process ship movement request
 	process(ship_main_y_reg, ship_main_x_reg, ship_main_orient_reg, ship_main_y_t, ship_main_y_b,
-			  ship_main_x_r, ship_main_x_l, refr_tick, btn)
+			  ship_main_x_r, ship_main_x_l, refr_tick, btn, mod4_ref_reg)
 	begin
 		-- no move
 		ship_main_y_next <= ship_main_y_reg;
 		ship_main_x_next <= ship_main_x_reg;
 		ship_main_orient_next <= ship_main_orient_reg;
+		mod4_ref_next <= mod4_ref_reg;
 		if (refr_tick = '1') then
+		
+			mod4_ref_next <= mod4_ref_reg + 1;
 			
-			-- turn clockwise
-			if (btn(0) = '1') then
+			-- turn clockwise USE REFERENCE TICK and counter to control it slower
+			if (btn(0) = '1' and mod4_ref_reg = 16) then
 				ship_main_orient_next <= ship_main_orient_reg - 1;
 			
 			-- turn anti-clockwise
-			elsif (btn(3) = '1') then
+			elsif (btn(3) = '1' and mod4_ref_reg = 16) then
 				ship_main_orient_next <= ship_main_orient_reg + 1;
 				
 			-- move forward
@@ -147,7 +154,6 @@ begin
 						if (ship_main_y_t > SHIP_V) then
 							ship_main_y_next <= ship_main_y_reg - SHIP_V;
 						end if;
-						
 						
 					when "01" =>
 						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) then
