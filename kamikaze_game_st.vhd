@@ -36,18 +36,18 @@ architecture arch of kamikaze_graph_st is
 	-- Declare ship image ROM
 	component ship_rom
 		port (
-		a: in std_logic_vector(5 downto 0);
+		a: in std_logic_vector(6 downto 0);
 		spo: out std_logic_vector(15 downto 0));
 	end component;
 		
-	signal rom_addr: std_logic_vector(5 downto 0);	
-	signal rom_addr_num: unsigned(5 downto 0);
+	signal rom_addr: std_logic_vector(6 downto 0);	
+	signal rom_addr_num: unsigned(6 downto 0);
 	signal rom_col: unsigned(3 downto 0);
 	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
 	signal rom_bit: std_logic;
 
 	-- main ship orientation
-	signal ship_main_orient_reg, ship_main_orient_next: unsigned(1 downto 0);
+	signal ship_main_orient_reg, ship_main_orient_next: unsigned(2 downto 0);
 	
 	-- signal to indicate if scan coord is whithin the ship
 	signal ship_main_on: std_logic;
@@ -103,17 +103,29 @@ begin
 		rom_addr_num <= (others=>'0');
 		if sq_ship_main_on = '1' then
 			case ship_main_orient_reg is
-				when "00" =>
-					rom_addr_num <= resize(pix_y-ship_main_y_t, 6);
+				when "000" =>
+					rom_addr_num <= resize(pix_y-ship_main_y_t, 7);
 				
-				when "01" =>
-					rom_addr_num <= 16 + resize(pix_y-ship_main_y_t, 6);
+				when "001" =>
+					rom_addr_num <= 16 + resize(pix_y-ship_main_y_t, 7);
 					
-				when "10" =>
-					rom_addr_num <= 32 + resize(pix_y-ship_main_y_t, 6);
+				when "010" =>
+					rom_addr_num <= 32 + resize(pix_y-ship_main_y_t, 7);
 					
+				when "011" =>
+					rom_addr_num <= 48 + resize(pix_y-ship_main_y_t, 7);
+					
+				when "100" =>
+					rom_addr_num <= 64 + resize(pix_y-ship_main_y_t, 7);
+				
+				when "101" =>
+					rom_addr_num <= 80 + resize(pix_y-ship_main_y_t, 7);
+				
+				when "110" =>
+					rom_addr_num <= 96 + resize(pix_y-ship_main_y_t, 7);
+				
 				when others =>
-					rom_addr_num <= 48 + resize(pix_y-ship_main_y_t, 6);
+					rom_addr_num <= 112 + resize(pix_y-ship_main_y_t, 7);
 			end case;
 		end if;
 	end process;
@@ -150,50 +162,99 @@ begin
 			-- move forward
 			elsif (btn(1) = '1') then
 				case ship_main_orient_reg is
-					when "00" =>
+					when "000" =>
 						if (ship_main_y_t > SHIP_V) then
 							ship_main_y_next <= ship_main_y_reg - SHIP_V;
 						end if;
 						
-					when "01" =>
+					when "001" =>
+						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) and (ship_main_y_t > SHIP_V) then
+							ship_main_x_next <= ship_main_x_reg + SHIP_V;
+							ship_main_y_next <= ship_main_y_reg - SHIP_V;
+						end if;
+					
+					when "010" =>
 						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) then
 							ship_main_x_next <= ship_main_x_reg + SHIP_V;
 						end if;
-					
-					when "10" =>
+						
+					when "011" =>
+						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) and (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
+							ship_main_x_next <= ship_main_x_reg + SHIP_V;
+							ship_main_y_next <= ship_main_y_reg + SHIP_v;
+						end if;
+						
+					when "100" =>
 						if (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
 							ship_main_y_next <= ship_main_y_reg + SHIP_V;
 						end if;
+					
+					when "101" =>
+						if (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) and (ship_main_x_l > SHIP_V) then
+							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+							ship_main_y_next <= ship_main_y_reg + SHIP_V;
+						end if;
+					
+					when "110" =>
+						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) then
+							ship_main_x_next <= ship_main_x_reg + SHIP_V;
+						end if;
 						
 					when others =>
-						if (ship_main_x_l > SHIP_V) then
-							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) and (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
+							ship_main_x_next <= ship_main_x_reg + SHIP_V;
+							ship_main_y_next <= ship_main_y_reg + SHIP_v;
 						end if;
 				end case;
 				
 			-- move backward	
 			elsif (btn(2) = '1') then
 				case ship_main_orient_reg is
-					when "00" =>
+					when "000" =>
 						if (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
 							ship_main_y_next <= ship_main_y_reg + SHIP_V;
 						end if;
-												
-					when "01" =>
+						
+					when "001" =>
+						if (ship_main_x_l > SHIP_V) and (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
+							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+							ship_main_y_next <= ship_main_y_reg + SHIP_V;
+						end if;
+					
+					when "010" =>
 						if (ship_main_x_l > SHIP_V) then
 							ship_main_x_next <= ship_main_x_reg - SHIP_V;
 						end if;
-					
-					when "10" =>
+						
+					when "011" =>
+						if (ship_main_x_l > SHIP_V) and (ship_main_y_t > SHIP_V) then
+							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+							ship_main_y_next <= ship_main_y_reg - SHIP_v;
+						end if;
+						
+					when "100" =>
 						if (ship_main_y_t > SHIP_V) then
 							ship_main_y_next <= ship_main_y_reg - SHIP_V;
 						end if;
-												
-					when others =>
-						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) then
+					
+					when "101" =>
+						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) and (ship_main_y_t > SHIP_V) then
 							ship_main_x_next <= ship_main_x_reg + SHIP_V;
+							ship_main_y_next <= ship_main_y_reg - SHIP_V;
+						end if;
+					
+					when "110" =>
+						if (ship_main_x_l > SHIP_V) then
+							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+						end if;
+						
+					when others =>
+						if (ship_main_x_l > SHIP_V) and (ship_main_y_t > SHIP_V) then
+							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+							ship_main_y_next <= ship_main_y_reg - SHIP_V;
 						end if;
 				end case;
+				
 			end if;
 		end if;
 	end process;

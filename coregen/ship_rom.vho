@@ -50,7 +50,7 @@
 ------------- Begin Cut here for COMPONENT Declaration ------ COMP_TAG
 component ship_rom
 	port (
-	a: in std_logic_vector(5 downto 0);
+	a: in std_logic_vector(6 downto 0);
 	spo: out std_logic_vector(15 downto 0));
 end component;
 
