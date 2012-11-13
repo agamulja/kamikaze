@@ -95,7 +95,7 @@ begin
 			);
 	
 	-- select row from ROM
-	process (ship_main_orient_reg, sq_ship_main_on)
+	process (ship_main_orient_reg, sq_ship_main_on, pix_y, ship_main_y_t)
 	begin
 		rom_addr_num <= (others=>'0');
 		if sq_ship_main_on = '1' then
