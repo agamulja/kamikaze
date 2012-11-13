@@ -20,9 +20,9 @@
             <spirit:configurableElementValue spirit:referenceId="parameter_common_output_clk">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_memory_type">rom</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_simple_dual_port_address">non_registered</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_default_data_radix">2</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_default_data_radix">16</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_common_output_ce">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_depth">16</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_depth">64</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_input_clock_enable">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_dual_port_address">non_registered</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_data_width">16</spirit:configurableElementValue>
@@ -74,8 +74,8 @@
                   <xilinx:file>
                      <xilinx:name>./ship_rom.mif</xilinx:name>
                      <xilinx:userFileType>mif</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:05:44 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x85C5F0BA</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:34 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x3A3A9B3E</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -83,8 +83,8 @@
                   <xilinx:file>
                      <xilinx:name>./ship_rom.xco</xilinx:name>
                      <xilinx:userFileType>xco</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:05:44 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0xE6E9F209</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:34 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x8A20FD71</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -92,38 +92,38 @@
                   <xilinx:file>
                      <xilinx:name>./dist_mem_gen_ds322.pdf</xilinx:name>
                      <xilinx:userFileType>pdf</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:05:51 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:43 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0xEFE1D156</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./dist_mem_gen_readme.txt</xilinx:name>
                      <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:05:51 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:43 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0x9CBACB81</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.asy</xilinx:name>
                      <xilinx:userFileType>asy</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:05:44 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x36793069</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:34 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x9B4EB80F</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.ngc</xilinx:name>
                      <xilinx:userFileType>ngc</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:06:00 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x2356D16A</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:50 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x6F29BC5E</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.vhd</xilinx:name>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:05:51 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x4CBD15ED</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:43 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x1102AC46</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.vho</xilinx:name>
                      <xilinx:userFileType>vho</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:05:51 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x24473DAD</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:43 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x369C9F5C</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -134,8 +134,8 @@
                   <xilinx:file>
                      <xilinx:name>./ship_rom.xco</xilinx:name>
                      <xilinx:userFileType>xco</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:06:06 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0xBA321878</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:56 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x0A4D0EDE</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -144,7 +144,7 @@
                      <xilinx:name>./ship_rom_xmdf.tcl</xilinx:name>
                      <xilinx:userFileType>tclXmdf</xilinx:userFileType>
                      <xilinx:userFileType>tcl</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:06:06 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:56 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0xDFB95DC3</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -154,22 +154,22 @@
                      <xilinx:name>./_xmsgs/pn_parser.xmsgs</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:06:07 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:58 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0xA0596064</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.gise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>gise</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:06:08 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:58 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0xA95B7195</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.xise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>xise</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:06:08 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x0C163983</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:58 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xF629AC10</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -179,7 +179,7 @@
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>txtReadme</xilinx:userFileType>
                      <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:06:08 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:58 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0x53D051B3</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -190,7 +190,7 @@
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>txtFlist</xilinx:userFileType>
                      <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Mon Nov 12 22:06:08 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Tue Nov 13 01:16:58 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0x2FA3A256</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>

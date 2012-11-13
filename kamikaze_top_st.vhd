@@ -6,7 +6,8 @@ entity kamikaze_top_st is
 		clk, reset: in std_logic;
 		btn: in std_logic_vector(3 downto 0);
 		hsync, vsync: out std_logic;
-		rgb: out std_logic_vector(7 downto 0)
+		rgb: out std_logic_vector(7 downto 0);
+		led: out std_logic
 	);
 end kamikaze_top_st;
 
@@ -26,7 +27,7 @@ begin
 -- instantiate pixel generation circuit
 	kamikaze_grf_st_unit: entity work.kamikaze_graph_st(arch)
 		port map(clk=>clk, reset=>reset, btn=>btn, video_on=>video_on, pixel_x=>pixel_x,
-			pixel_y=>pixel_y, graph_rgb=>rgb_next);
+			pixel_y=>pixel_y, graph_rgb=>rgb_next, led=>led);
 	
 	-- rgb buffer, graph_rgb is routed to the ouput through
 	-- an output buffer -- loaded when pixel_tick = '1'.

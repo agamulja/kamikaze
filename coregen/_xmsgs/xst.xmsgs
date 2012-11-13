@@ -11,7 +11,7 @@
 <msg type="warning" file="Xst" num="1748" delta="new" >&quot;<arg fmt="%s" index="1">C:/Users/Andrew Gamulja/Documents/VHDL/kamikaze/coregen/./tmp/_cg/_bbx/dist_mem_gen_v5_1/dist_mem_utils.vhd</arg>&quot; line <arg fmt="%d" index="2">309</arg>: VHDL Assertion Statement with non constant condition is ignored.
 </msg>
 
-<msg type="info" file="Xst" num="2679" delta="new" >Register &lt;<arg fmt="%s" index="1">a_reg</arg>&gt; in unit &lt;<arg fmt="%s" index="2">rom</arg>&gt; has a constant value of <arg fmt="%s" index="3">0000</arg> during circuit operation. The register is replaced by logic.
+<msg type="info" file="Xst" num="2679" delta="new" >Register &lt;<arg fmt="%s" index="1">a_reg</arg>&gt; in unit &lt;<arg fmt="%s" index="2">rom</arg>&gt; has a constant value of <arg fmt="%s" index="3">000000</arg> during circuit operation. The register is replaced by logic.
 </msg>
 
 <msg type="info" file="Xst" num="2679" delta="new" >Register &lt;<arg fmt="%s" index="1">ce_reg</arg>&gt; in unit &lt;<arg fmt="%s" index="2">rom</arg>&gt; has a constant value of <arg fmt="%s" index="3">X</arg> during circuit operation. The register is replaced by logic.

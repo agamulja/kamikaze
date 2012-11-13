@@ -41,3 +41,6 @@ NET "rgb<7>"  	LOC = "U4"; # Bank = 2, Pin name = IO_L03P_2/DOUT/BUSY, Type = DU
 
 NET "hsync" 	LOC = "T4"; # Bank = 2, Pin name = IO_L03N_2/MOSI/CSI_B, Type = DUAL, Sch name = HSYNC
 NET "vsync" 	LOC = "U3"; # Bank = 2, Pin name = IO_L01P_2/CSO_B, Type = DUAL, Sch name = VSYNC
+
+# LEDs
+NET "led"		LOC = "J14";

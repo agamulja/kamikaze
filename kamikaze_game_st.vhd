@@ -8,7 +8,8 @@ entity kamikaze_graph_st is
 		btn: in std_logic_vector(3 downto 0);
 		video_on: in std_logic;
 		pixel_x, pixel_y: in std_logic_vector(9 downto 0);
-		graph_rgb: out std_logic_vector(7 downto 0)
+		graph_rgb: out std_logic_vector(7 downto 0);
+		led: out std_logic
 	);
 end kamikaze_graph_st;
 
@@ -34,15 +35,19 @@ architecture arch of kamikaze_graph_st is
 	-- Declare ship image ROM
 	component ship_rom
 		port (
-		a: in std_logic_vector(3 downto 0);
+		a: in std_logic_vector(5 downto 0);
 		spo: out std_logic_vector(15 downto 0));
 	end component;
 		
-	signal rom_addr: std_logic_vector(3 downto 0);	
+	signal rom_addr: std_logic_vector(5 downto 0);	
+	signal rom_addr_num: unsigned(5 downto 0);
 	signal rom_col: unsigned(3 downto 0);
 	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
 	signal rom_bit: std_logic;
 
+	-- main ship orientation
+	signal ship_main_orient_reg, ship_main_orient_next: unsigned(1 downto 0);
+	
 	-- signal to indicate if scan coord is whithin the ship
 	signal ship_main_on: std_logic;
 	signal sq_ship_main_on: std_logic;
@@ -57,15 +62,17 @@ begin
 	-- e.g., when the screen is refreshed -- speed is 60 Hz
 	refr_tick <= '1' when (pix_y = 481) and (pix_x = 0) else '0';
 		
-	-- register for the ship
+	-- registers for the ship (position and orientation)
 	process(clk, reset)
 	begin
 		if (reset='1') then
 			ship_main_y_reg <= to_unsigned(MAX_Y/2, 10);
 			ship_main_x_reg <= to_unsigned(MAX_X/2, 10);
+			ship_main_orient_reg <= (others=>'0');
 		elsif (clk'event and clk='1') then
 			ship_main_y_reg <= ship_main_y_next;
 			ship_main_x_reg <= ship_main_x_next;
+			ship_main_orient_reg <= ship_main_orient_next;
 		end if;
 	end process;
 		
@@ -87,7 +94,28 @@ begin
 				spo => rom_data
 			);
 	
-	rom_addr <= std_logic_vector(pix_y(3 downto 0) - ship_main_y_t(3 downto 0));
+	-- select row from ROM
+	process (ship_main_orient_reg, sq_ship_main_on)
+	begin
+		rom_addr_num <= (others=>'0');
+		if sq_ship_main_on = '1' then
+			case ship_main_orient_reg is
+				when "00" =>
+					rom_addr_num <= resize(pix_y-ship_main_y_t, 6);
+				
+				when "01" =>
+					rom_addr_num <= 16 + resize(pix_y-ship_main_y_t, 6);
+					
+				when "10" =>
+					rom_addr_num <= 32 + resize(pix_y-ship_main_y_t, 6);
+					
+				when others =>
+					rom_addr_num <= 48 + resize(pix_y-ship_main_y_t, 6);
+			end case;
+		end if;
+	end process;
+
+	rom_addr <= std_logic_vector(rom_addr_num);
 	rom_col <= pix_x(3 downto 0) - ship_main_x_l(3 downto 0);
 	rom_bit <= rom_data(to_integer(rom_col));
 	ship_main_on <= '1' when (sq_ship_main_on = '1') and (rom_bit = '1') else '0';
@@ -95,22 +123,71 @@ begin
 	
 	
 	-- process ship movement request
-	process(ship_main_y_reg, ship_main_x_reg, ship_main_y_t, ship_main_y_b,
+	process(ship_main_y_reg, ship_main_x_reg, ship_main_orient_reg, ship_main_y_t, ship_main_y_b,
 			  ship_main_x_r, ship_main_x_l, refr_tick, btn)
 	begin
 		-- no move
 		ship_main_y_next <= ship_main_y_reg;
 		ship_main_x_next <= ship_main_x_reg;
+		ship_main_orient_next <= ship_main_orient_reg;
 		if (refr_tick = '1') then
-			-- if btn 0 is pressed and ship is not at bottom yet
-			if (btn(0) = '1' and ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
-				ship_main_y_next <= ship_main_y_reg + SHIP_V;
-			elsif (btn(1) = '1' and ship_main_y_t > SHIP_V) then
-				ship_main_y_next <= ship_main_y_reg - SHIP_V;
-			elsif (btn(2) = '1' and ship_main_x_r < (MAX_X - 1 - SHIP_V)) then
-				ship_main_x_next <= ship_main_x_reg + SHIP_V;
-			elsif (btn(3) = '1' and ship_main_x_l > SHIP_V) then
-				ship_main_x_next <= ship_main_x_reg - SHIP_V;
+			
+			-- turn clockwise
+			if (btn(0) = '1') then
+				ship_main_orient_next <= ship_main_orient_reg - 1;
+			
+			-- turn anti-clockwise
+			elsif (btn(3) = '1') then
+				ship_main_orient_next <= ship_main_orient_reg + 1;
+				
+			-- move forward
+			elsif (btn(1) = '1') then
+				case ship_main_orient_reg is
+					when "00" =>
+						if (ship_main_y_t > SHIP_V) then
+							ship_main_y_next <= ship_main_y_reg - SHIP_V;
+						end if;
+						
+						
+					when "01" =>
+						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) then
+							ship_main_x_next <= ship_main_x_reg + SHIP_V;
+						end if;
+					
+					when "10" =>
+						if (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
+							ship_main_y_next <= ship_main_y_reg + SHIP_V;
+						end if;
+						
+					when others =>
+						if (ship_main_x_l > SHIP_V) then
+							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+						end if;
+				end case;
+				
+			-- move backward	
+			elsif (btn(2) = '1') then
+				case ship_main_orient_reg is
+					when "00" =>
+						if (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
+							ship_main_y_next <= ship_main_y_reg + SHIP_V;
+						end if;
+												
+					when "01" =>
+						if (ship_main_x_l > SHIP_V) then
+							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+						end if;
+					
+					when "10" =>
+						if (ship_main_y_t > SHIP_V) then
+							ship_main_y_next <= ship_main_y_reg - SHIP_V;
+						end if;
+												
+					when others =>
+						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) then
+							ship_main_x_next <= ship_main_x_reg + SHIP_V;
+						end if;
+				end case;
 			end if;
 		end if;
 	end process;
@@ -128,4 +205,7 @@ begin
 			end if;
 		end if;
 	end process;
+	
+	led <= '1' when ship_main_orient_reg = "00" else '0';
+	
 end arch;
