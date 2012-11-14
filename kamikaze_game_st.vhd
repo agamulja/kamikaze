@@ -32,6 +32,8 @@ architecture arch of kamikaze_graph_st is
 	signal ship_main_x_l: unsigned(9 downto 0);
 	signal ship_main_x_r: unsigned(9 downto 0);
 	signal ship_main_x_reg, ship_main_x_next: unsigned(9 downto 0);
+	-- main ship orientation
+	signal ship_main_orient_reg, ship_main_orient_next: unsigned(2 downto 0);
 	
 	-- Declare ship image ROM
 	component ship_rom
@@ -44,10 +46,8 @@ architecture arch of kamikaze_graph_st is
 	signal rom_addr_num: unsigned(6 downto 0);
 	signal rom_col: unsigned(3 downto 0);
 	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
+	signal rom_data_inv: std_logic_vector(0 to SHIP_SIZE-1);
 	signal rom_bit: std_logic;
-
-	-- main ship orientation
-	signal ship_main_orient_reg, ship_main_orient_next: unsigned(2 downto 0);
 	
 	-- signal to indicate if scan coord is whithin the ship
 	signal ship_main_on: std_logic;
@@ -94,8 +94,9 @@ begin
 	ship_main_rom : ship_rom
 			port map (
 				a => rom_addr,
-				spo => rom_data
+				spo => rom_data_inv
 			);
+			
 	
 	-- select row from ROM
 	process (ship_main_orient_reg, sq_ship_main_on, pix_y, ship_main_y_t)
@@ -132,7 +133,8 @@ begin
 
 	rom_addr <= std_logic_vector(rom_addr_num);
 	rom_col <= pix_x(3 downto 0) - ship_main_x_l(3 downto 0);
-	rom_bit <= rom_data(to_integer(rom_col));
+	rom_data <= rom_data_inv;
+	rom_bit <= rom_data(to_integer(15-rom_col));
 	ship_main_on <= '1' when (sq_ship_main_on = '1') and (rom_bit = '1') else '0';
 	ship_rgb <= "00011100"; -- color of the ship
 	
@@ -153,11 +155,11 @@ begin
 			
 			-- turn clockwise USE REFERENCE TICK and counter to control it slower
 			if (btn(0) = '1' and mod4_ref_reg = 16) then
-				ship_main_orient_next <= ship_main_orient_reg - 1;
+				ship_main_orient_next <= ship_main_orient_reg + 1;
 			
 			-- turn anti-clockwise
 			elsif (btn(3) = '1' and mod4_ref_reg = 16) then
-				ship_main_orient_next <= ship_main_orient_reg + 1;
+				ship_main_orient_next <= ship_main_orient_reg - 1;
 				
 			-- move forward
 			elsif (btn(1) = '1') then
@@ -273,6 +275,7 @@ begin
 		end if;
 	end process;
 	
-	led <= '1' when ship_main_orient_reg = "00" else '0';
+	
+	led <= '1' when ship_main_orient_reg = 2 else '0';
 	
 end arch;
