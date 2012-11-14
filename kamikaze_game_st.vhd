@@ -14,48 +14,50 @@ entity kamikaze_graph_st is
 end kamikaze_graph_st;
 
 architecture arch of kamikaze_graph_st is
--- x, y coordinates (0,0) to (639, 479)
+	-- constants
+	constant MAX_X: integer := 640;			-- number of horizontal pixels
+	constant MAX_Y: integer := 480;			-- number of vertical pixels
+	constant SHIP_V: integer := 4;			-- ship moving velocity
+	constant SHIP_SIZE: integer := 16;		-- size of ship square box
+	constant ROM_ADDR_SIZE: integer := 7;	--	size of rom_addr (bits)
+	constant ROM_COL_SIZE: integer := 4;	-- size of rom_col signal used to access every column
+
+	-- x, y coordinates (0,0) to (639, 479)
 	signal pix_x, pix_y: unsigned(9 downto 0);
 	signal refr_tick: std_logic; -- 60-Hz enable tick
 	signal mod4_ref_reg, mod4_ref_next: unsigned(4 downto 0);
-	constant MAX_X: integer := 640;
-	constant MAX_Y: integer := 480;
-		
-	-- ship moving velocity
-	constant SHIP_V: integer := 4;
 	
 	-- ship box: left, right, top, bottom borders
-	constant SHIP_SIZE: integer := 16;
 	signal ship_main_y_t: unsigned(9 downto 0);
 	signal ship_main_y_b: unsigned(9 downto 0);
 	signal ship_main_y_reg, ship_main_y_next: unsigned(9 downto 0); -- for anchor point in top left
 	signal ship_main_x_l: unsigned(9 downto 0);
 	signal ship_main_x_r: unsigned(9 downto 0);
 	signal ship_main_x_reg, ship_main_x_next: unsigned(9 downto 0);
-	-- main ship orientation
+	-- main ship orientation register
 	signal ship_main_orient_reg, ship_main_orient_next: unsigned(2 downto 0);
-	
-	-- Declare ship image ROM
-	component ship_rom
-		port (
-		a: in std_logic_vector(6 downto 0);
-		spo: out std_logic_vector(15 downto 0));
-	end component;
-		
-	signal rom_addr: std_logic_vector(6 downto 0);	
-	signal rom_addr_num: unsigned(6 downto 0);
-	signal rom_col: unsigned(3 downto 0);
-	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
-	signal rom_data_inv: std_logic_vector(0 to SHIP_SIZE-1);
-	signal rom_bit: std_logic;
 	
 	-- signal to indicate if scan coord is whithin the ship
 	signal ship_main_on: std_logic;
 	signal sq_ship_main_on: std_logic;
 	signal ship_rgb: std_logic_vector(7 downto 0);
 	
-	
+	-- signal to be used for ROM
+	signal rom_addr: std_logic_vector(ROM_ADDR_SIZE-1 downto 0);	
+	signal rom_addr_num: unsigned(ROM_ADDR_SIZE-1 downto 0);
+	signal rom_col: unsigned(ROM_COL_SIZE-1 downto 0);
+	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
+	signal rom_bit: std_logic;
+	-- Declare ship image ROM
+	component ship_rom
+		port (
+		a: in std_logic_vector(ROM_ADDR_SIZE-1 downto 0);
+		spo: out std_logic_vector(SHIP_SIZE-1 downto 0));
+	end component;
+		
+		
 begin
+
 	pix_x <= unsigned(pixel_x);
 	pix_y <= unsigned(pixel_y);
 	
@@ -94,10 +96,9 @@ begin
 	ship_main_rom : ship_rom
 			port map (
 				a => rom_addr,
-				spo => rom_data_inv
+				spo => rom_data
 			);
 			
-	
 	-- select row from ROM
 	process (ship_main_orient_reg, sq_ship_main_on, pix_y, ship_main_y_t)
 	begin
@@ -105,39 +106,37 @@ begin
 		if sq_ship_main_on = '1' then
 			case ship_main_orient_reg is
 				when "000" =>
-					rom_addr_num <= resize(pix_y-ship_main_y_t, 7);
+					rom_addr_num <= resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
 				
 				when "001" =>
-					rom_addr_num <= 16 + resize(pix_y-ship_main_y_t, 7);
+					rom_addr_num <= SHIP_SIZE + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
 					
 				when "010" =>
-					rom_addr_num <= 32 + resize(pix_y-ship_main_y_t, 7);
+					rom_addr_num <= SHIP_SIZE*2 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
 					
 				when "011" =>
-					rom_addr_num <= 48 + resize(pix_y-ship_main_y_t, 7);
+					rom_addr_num <= SHIP_SIZE*3 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
 					
 				when "100" =>
-					rom_addr_num <= 64 + resize(pix_y-ship_main_y_t, 7);
+					rom_addr_num <= SHIP_SIZE*4 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
 				
 				when "101" =>
-					rom_addr_num <= 80 + resize(pix_y-ship_main_y_t, 7);
+					rom_addr_num <= SHIP_SIZE*5 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
 				
 				when "110" =>
-					rom_addr_num <= 96 + resize(pix_y-ship_main_y_t, 7);
+					rom_addr_num <= SHIP_SIZE*6 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
 				
 				when others =>
-					rom_addr_num <= 112 + resize(pix_y-ship_main_y_t, 7);
+					rom_addr_num <= SHIP_SIZE*7 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
 			end case;
 		end if;
 	end process;
 
 	rom_addr <= std_logic_vector(rom_addr_num);
 	rom_col <= pix_x(3 downto 0) - ship_main_x_l(3 downto 0);
-	rom_data <= rom_data_inv;
-	rom_bit <= rom_data(to_integer(15-rom_col));
+	rom_bit <= rom_data(to_integer(SHIP_SIZE-1-rom_col));
 	ship_main_on <= '1' when (sq_ship_main_on = '1') and (rom_bit = '1') else '0';
 	ship_rgb <= "00011100"; -- color of the ship
-	
 	
 	
 	-- process ship movement request
@@ -256,7 +255,6 @@ begin
 							ship_main_y_next <= ship_main_y_reg - SHIP_V;
 						end if;
 				end case;
-				
 			end if;
 		end if;
 	end process;

@@ -21,7 +21,6 @@ begin
 		port map(clk=>clk, reset=>reset,
 			video_on=>video_on, p_tick=>pixel_tick,
 			hsync=>hsync, vsync=>vsync,
-			comp_sync=>open,
 			pixel_x=>pixel_x, pixel_y=>pixel_y);
 			
 -- instantiate pixel generation circuit

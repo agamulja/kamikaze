@@ -6,7 +6,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity vga_sync is
 	port(
 		clk, reset: in std_logic;
-		hsync, vsync, comp_sync: out std_logic;
+		hsync, vsync: out std_logic;
 		video_on, p_tick: out std_logic;
 		pixel_x, pixel_y: out std_logic_vector(9 downto 0)
 );
