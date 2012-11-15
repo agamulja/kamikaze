@@ -17,15 +17,15 @@ architecture arch of kamikaze_graph_st is
 	-- constants
 	constant MAX_X: integer := 640;			-- number of horizontal pixels
 	constant MAX_Y: integer := 480;			-- number of vertical pixels
-	constant SHIP_V: integer := 4;			-- ship moving velocity
-	constant SHIP_SIZE: integer := 16;		-- size of ship square box
-	constant ROM_ADDR_SIZE: integer := 7;	--	size of rom_addr (bits)
-	constant ROM_COL_SIZE: integer := 4;	-- size of rom_col signal used to access every column
+	constant SHIP_V: integer := 1;			-- ship moving velocity
+	constant SHIP_SIZE: integer := 22;		-- size of ship square box
+	constant ROM_ADDR_SIZE: integer := 8;	--	size of rom_addr (bits)
+	constant ROM_COL_SIZE: integer := 5;	-- size of rom_col signal used to access every column
 
 	-- x, y coordinates (0,0) to (639, 479)
 	signal pix_x, pix_y: unsigned(9 downto 0);
 	signal refr_tick: std_logic; -- 60-Hz enable tick
-	signal mod4_ref_reg, mod4_ref_next: unsigned(4 downto 0);
+	signal mod16_ref_reg, mod16_ref_next: unsigned(3 downto 0);
 	
 	-- ship box: left, right, top, bottom borders
 	signal ship_main_y_t: unsigned(9 downto 0);
@@ -72,12 +72,12 @@ begin
 			ship_main_y_reg <= to_unsigned(MAX_Y/2, 10);
 			ship_main_x_reg <= to_unsigned(MAX_X/2, 10);
 			ship_main_orient_reg <= (others=>'0');
-			mod4_ref_reg <= (others=>'0');
+			mod16_ref_reg <= (others=>'0');
 		elsif (clk'event and clk='1') then
 			ship_main_y_reg <= ship_main_y_next;
 			ship_main_x_reg <= ship_main_x_next;
 			ship_main_orient_reg <= ship_main_orient_next;
-			mod4_ref_reg <= mod4_ref_next;
+			mod16_ref_reg <= mod16_ref_next;
 		end if;
 	end process;
 		
@@ -133,7 +133,7 @@ begin
 	end process;
 
 	rom_addr <= std_logic_vector(rom_addr_num);
-	rom_col <= pix_x(3 downto 0) - ship_main_x_l(3 downto 0);
+	rom_col <= resize(pix_x-ship_main_x_l, ROM_COL_SIZE) when sq_ship_main_on = '1' else (others=>'0');
 	rom_bit <= rom_data(to_integer(SHIP_SIZE-1-rom_col));
 	ship_main_on <= '1' when (sq_ship_main_on = '1') and (rom_bit = '1') else '0';
 	ship_rgb <= "00011100"; -- color of the ship
@@ -141,23 +141,23 @@ begin
 	
 	-- process ship movement request
 	process(ship_main_y_reg, ship_main_x_reg, ship_main_orient_reg, ship_main_y_t, ship_main_y_b,
-			  ship_main_x_r, ship_main_x_l, refr_tick, btn, mod4_ref_reg)
+			  ship_main_x_r, ship_main_x_l, refr_tick, btn, mod16_ref_reg)
 	begin
 		-- no move
 		ship_main_y_next <= ship_main_y_reg;
 		ship_main_x_next <= ship_main_x_reg;
 		ship_main_orient_next <= ship_main_orient_reg;
-		mod4_ref_next <= mod4_ref_reg;
+		mod16_ref_next <= mod16_ref_reg;
 		if (refr_tick = '1') then
 		
-			mod4_ref_next <= mod4_ref_reg + 1;
+			mod16_ref_next <= mod16_ref_reg + 1;
 			
 			-- turn clockwise USE REFERENCE TICK and counter to control it slower
-			if (btn(0) = '1' and mod4_ref_reg = 16) then
+			if (btn(0) = '1' and mod16_ref_reg = 8) then
 				ship_main_orient_next <= ship_main_orient_reg + 1;
 			
 			-- turn anti-clockwise
-			elsif (btn(3) = '1' and mod4_ref_reg = 16) then
+			elsif (btn(3) = '1' and mod16_ref_reg = 8) then
 				ship_main_orient_next <= ship_main_orient_reg - 1;
 				
 			-- move forward
@@ -182,7 +182,7 @@ begin
 					when "011" =>
 						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) and (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
 							ship_main_x_next <= ship_main_x_reg + SHIP_V;
-							ship_main_y_next <= ship_main_y_reg + SHIP_v;
+							ship_main_y_next <= ship_main_y_reg + SHIP_V;
 						end if;
 						
 					when "100" =>
@@ -197,14 +197,14 @@ begin
 						end if;
 					
 					when "110" =>
-						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) then
-							ship_main_x_next <= ship_main_x_reg + SHIP_V;
+						if (ship_main_x_l > SHIP_V) then
+							ship_main_x_next <= ship_main_x_reg - SHIP_V;
 						end if;
 						
 					when others =>
-						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) and (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
-							ship_main_x_next <= ship_main_x_reg + SHIP_V;
-							ship_main_y_next <= ship_main_y_reg + SHIP_v;
+						if (ship_main_x_l > SHIP_V) and (ship_main_y_t > SHIP_V) then
+							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+							ship_main_y_next <= ship_main_y_reg - SHIP_V;
 						end if;
 				end case;
 				
@@ -230,7 +230,7 @@ begin
 					when "011" =>
 						if (ship_main_x_l > SHIP_V) and (ship_main_y_t > SHIP_V) then
 							ship_main_x_next <= ship_main_x_reg - SHIP_V;
-							ship_main_y_next <= ship_main_y_reg - SHIP_v;
+							ship_main_y_next <= ship_main_y_reg - SHIP_V;
 						end if;
 						
 					when "100" =>
@@ -245,14 +245,14 @@ begin
 						end if;
 					
 					when "110" =>
-						if (ship_main_x_l > SHIP_V) then
-							ship_main_x_next <= ship_main_x_reg - SHIP_V;
+						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) then
+							ship_main_x_next <= ship_main_x_reg + SHIP_V;
 						end if;
 						
 					when others =>
-						if (ship_main_x_l > SHIP_V) and (ship_main_y_t > SHIP_V) then
-							ship_main_x_next <= ship_main_x_reg - SHIP_V;
-							ship_main_y_next <= ship_main_y_reg - SHIP_V;
+						if (ship_main_x_r < (MAX_X - 1 - SHIP_V)) and (ship_main_y_b < (MAX_Y - 1 - SHIP_V)) then
+							ship_main_x_next <= ship_main_x_reg + SHIP_V;
+							ship_main_y_next <= ship_main_y_reg + SHIP_V;
 						end if;
 				end case;
 			end if;

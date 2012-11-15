@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 12.4
-# Date: Tue Nov 13 20:37:23 2012
+# Date: Wed Nov 14 22:10:39 2012
 #
 ##############################################################
 #
@@ -40,10 +40,10 @@ CSET coefficient_file="C:\Users\Andrew Gamulja\Documents\VHDL\kamikaze\ship_init
 CSET common_output_ce=false
 CSET common_output_clk=false
 CSET component_name=ship_rom
-CSET data_width=16
+CSET data_width=22
 CSET default_data=0
 CSET default_data_radix=2
-CSET depth=128
+CSET depth=176
 CSET dual_port_address=non_registered
 CSET dual_port_output_clock_enable=false
 CSET input_clock_enable=false
@@ -63,4 +63,4 @@ CSET sync_reset_qsdpo=false
 CSET sync_reset_qspo=false
 # END Parameters
 GENERATE
-# CRC:  51c4404
+# CRC: 2050e740

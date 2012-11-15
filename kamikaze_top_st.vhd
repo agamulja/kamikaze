@@ -12,9 +12,11 @@ entity kamikaze_top_st is
 end kamikaze_top_st;
 
 architecture arch of kamikaze_top_st is
+	
 	signal pixel_x, pixel_y: std_logic_vector(9 downto 0);
 	signal video_on, pixel_tick: std_logic;
 	signal rgb_reg, rgb_next: std_logic_vector(7 downto 0);
+	
 begin
 -- instantiate VGA sync
 	vga_sync_unit: entity work.vga_sync
@@ -22,11 +24,12 @@ begin
 			video_on=>video_on, p_tick=>pixel_tick,
 			hsync=>hsync, vsync=>vsync,
 			pixel_x=>pixel_x, pixel_y=>pixel_y);
-			
+
 -- instantiate pixel generation circuit
 	kamikaze_grf_st_unit: entity work.kamikaze_graph_st(arch)
 		port map(clk=>clk, reset=>reset, btn=>btn, video_on=>video_on, pixel_x=>pixel_x,
 			pixel_y=>pixel_y, graph_rgb=>rgb_next, led=>led);
+	
 	
 	-- rgb buffer, graph_rgb is routed to the ouput through
 	-- an output buffer -- loaded when pixel_tick = '1'.

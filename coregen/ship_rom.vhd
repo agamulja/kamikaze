@@ -61,16 +61,16 @@ Library XilinxCoreLib;
 -- synthesis translate_on
 ENTITY ship_rom IS
 	port (
-	a: in std_logic_vector(6 downto 0);
-	spo: out std_logic_vector(15 downto 0));
+	a: in std_logic_vector(7 downto 0);
+	spo: out std_logic_vector(21 downto 0));
 END ship_rom;
 
 ARCHITECTURE ship_rom_a OF ship_rom IS
 -- synthesis translate_off
 component wrapped_ship_rom
 	port (
-	a: in std_logic_vector(6 downto 0);
-	spo: out std_logic_vector(15 downto 0));
+	a: in std_logic_vector(7 downto 0);
+	spo: out std_logic_vector(21 downto 0));
 end component;
 
 -- Configuration specification 
@@ -84,7 +84,7 @@ end component;
 			c_has_spo => 1,
 			c_read_mif => 1,
 			c_has_qspo => 0,
-			c_width => 16,
+			c_width => 22,
 			c_reg_a_d_inputs => 0,
 			c_has_we => 0,
 			c_pipeline_stages => 0,
@@ -93,7 +93,7 @@ end component;
 			c_qualify_we => 0,
 			c_family => "spartan3",
 			c_sync_enable => 1,
-			c_depth => 128,
+			c_depth => 176,
 			c_has_qspo_srst => 0,
 			c_has_qdpo_srst => 0,
 			c_has_dpra => 0,
@@ -105,7 +105,7 @@ end component;
 			c_default_data => "0",
 			c_has_spra => 0,
 			c_has_qspo_ce => 0,
-			c_addr_width => 7,
+			c_addr_width => 8,
 			c_has_qspo_rst => 0,
 			c_has_qdpo => 0);
 -- synthesis translate_on
