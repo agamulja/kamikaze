@@ -22,7 +22,7 @@
   <sourceproject xmlns="http://www.xilinx.com/XMLSchema" xil_pn:fileType="FILE_XISE" xil_pn:name="ship_rom.xise"/>
 
   <files xmlns="http://www.xilinx.com/XMLSchema">
-    <file xil_pn:fileType="FILE_USERDOC" xil_pn:name="dist_mem_gen_readme.txt" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_USERDOC" xil_pn:name="blk_mem_gen_readme.txt" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_ASY" xil_pn:name="ship_rom.asy" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_VHO" xil_pn:name="ship_rom.vho" xil_pn:origination="imported"/>
   </files>

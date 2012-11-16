@@ -61,60 +61,84 @@ Library XilinxCoreLib;
 -- synthesis translate_on
 ENTITY ship_rom IS
 	port (
-	a: in std_logic_vector(7 downto 0);
-	spo: out std_logic_vector(21 downto 0));
+	clka: in std_logic;
+	addra: in std_logic_vector(7 downto 0);
+	douta: out std_logic_vector(21 downto 0));
 END ship_rom;
 
 ARCHITECTURE ship_rom_a OF ship_rom IS
 -- synthesis translate_off
 component wrapped_ship_rom
 	port (
-	a: in std_logic_vector(7 downto 0);
-	spo: out std_logic_vector(21 downto 0));
+	clka: in std_logic;
+	addra: in std_logic_vector(7 downto 0);
+	douta: out std_logic_vector(21 downto 0));
 end component;
 
 -- Configuration specification 
-	for all : wrapped_ship_rom use entity XilinxCoreLib.dist_mem_gen_v5_1(behavioral)
+	for all : wrapped_ship_rom use entity XilinxCoreLib.blk_mem_gen_v4_3(behavioral)
 		generic map(
-			c_has_clk => 0,
-			c_has_qdpo_clk => 0,
-			c_has_qdpo_ce => 0,
-			c_parser_type => 1,
-			c_has_d => 0,
-			c_has_spo => 1,
-			c_read_mif => 1,
-			c_has_qspo => 0,
-			c_width => 22,
-			c_reg_a_d_inputs => 0,
-			c_has_we => 0,
-			c_pipeline_stages => 0,
-			c_has_qdpo_rst => 0,
-			c_reg_dpra_input => 0,
-			c_qualify_we => 0,
+			c_has_regceb => 0,
+			c_has_regcea => 0,
+			c_mem_type => 3,
+			c_rstram_b => 0,
+			c_rstram_a => 0,
+			c_has_injecterr => 0,
+			c_rst_type => "SYNC",
+			c_prim_type => 1,
+			c_read_width_b => 22,
+			c_initb_val => "0",
 			c_family => "spartan3",
-			c_sync_enable => 1,
-			c_depth => 176,
-			c_has_qspo_srst => 0,
-			c_has_qdpo_srst => 0,
-			c_has_dpra => 0,
-			c_qce_joined => 0,
-			c_mem_type => 0,
-			c_has_i_ce => 0,
-			c_has_dpo => 0,
-			c_mem_init_file => "ship_rom.mif",
+			c_read_width_a => 22,
+			c_disable_warn_bhv_coll => 0,
+			c_use_softecc => 0,
+			c_write_mode_b => "WRITE_FIRST",
+			c_init_file_name => "ship_rom.mif",
+			c_write_mode_a => "WRITE_FIRST",
+			c_mux_pipeline_stages => 0,
+			c_has_softecc_output_regs_b => 0,
+			c_has_mem_output_regs_b => 0,
+			c_has_mem_output_regs_a => 0,
+			c_load_init_file => 1,
+			c_xdevicefamily => "spartan3e",
+			c_write_depth_b => 176,
+			c_write_depth_a => 176,
+			c_has_rstb => 0,
+			c_has_rsta => 0,
+			c_has_mux_output_regs_b => 0,
+			c_inita_val => "0",
+			c_has_mux_output_regs_a => 0,
+			c_addra_width => 8,
+			c_has_softecc_input_regs_a => 0,
+			c_addrb_width => 8,
 			c_default_data => "0",
-			c_has_spra => 0,
-			c_has_qspo_ce => 0,
-			c_addr_width => 8,
-			c_has_qspo_rst => 0,
-			c_has_qdpo => 0);
+			c_use_ecc => 0,
+			c_algorithm => 1,
+			c_disable_warn_bhv_range => 0,
+			c_write_width_b => 22,
+			c_write_width_a => 22,
+			c_read_depth_b => 176,
+			c_read_depth_a => 176,
+			c_byte_size => 9,
+			c_sim_collision_check => "ALL",
+			c_common_clk => 0,
+			c_wea_width => 1,
+			c_has_enb => 0,
+			c_web_width => 1,
+			c_has_ena => 0,
+			c_use_byte_web => 0,
+			c_use_byte_wea => 0,
+			c_rst_priority_b => "CE",
+			c_rst_priority_a => "CE",
+			c_use_default_data => 0);
 -- synthesis translate_on
 BEGIN
 -- synthesis translate_off
 U0 : wrapped_ship_rom
 		port map (
-			a => a,
-			spo => spo);
+			clka => clka,
+			addra => addra,
+			douta => douta);
 -- synthesis translate_on
 
 END ship_rom_a;

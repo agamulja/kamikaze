@@ -14,6 +14,7 @@ entity kamikaze_graph_st is
 end kamikaze_graph_st;
 
 architecture arch of kamikaze_graph_st is
+	
 	-- constants
 	constant MAX_X: integer := 640;			-- number of horizontal pixels
 	constant MAX_Y: integer := 480;			-- number of vertical pixels
@@ -38,23 +39,18 @@ architecture arch of kamikaze_graph_st is
 	signal ship_main_orient_reg, ship_main_orient_next: unsigned(2 downto 0);
 	
 	-- signal to indicate if scan coord is whithin the ship
-	signal ship_main_on: std_logic;
 	signal sq_ship_main_on: std_logic;
+	signal ship_main_on: std_logic;
 	signal ship_rgb: std_logic_vector(7 downto 0);
-	
+	signal ship_enemy_on: std_logic;
+	signal ship_enemy_rgb: std_logic_vector(7 downto 0);
+
 	-- signal to be used for ROM
 	signal rom_addr: std_logic_vector(ROM_ADDR_SIZE-1 downto 0);	
 	signal rom_addr_num: unsigned(ROM_ADDR_SIZE-1 downto 0);
 	signal rom_col: unsigned(ROM_COL_SIZE-1 downto 0);
 	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
 	signal rom_bit: std_logic;
-	-- Declare ship image ROM
-	component ship_rom
-		port (
-		a: in std_logic_vector(ROM_ADDR_SIZE-1 downto 0);
-		spo: out std_logic_vector(SHIP_SIZE-1 downto 0));
-	end component;
-		
 		
 begin
 
@@ -81,7 +77,7 @@ begin
 		end if;
 	end process;
 		
-	-- Current position of the ship box
+	-- Current position of the main_ship box
 	ship_main_y_t <= ship_main_y_reg;
 	ship_main_y_b <= ship_main_y_t + SHIP_SIZE-1;
 	ship_main_x_l <= ship_main_x_reg;
@@ -93,12 +89,12 @@ begin
 					  else '0';
 		
 	-- map scan coord to ROM addr/col
-	ship_main_rom : ship_rom
-			port map (
-				a => rom_addr,
-				spo => rom_data
-			);
-			
+	ship_main_rom : entity work.ship_rom
+		port map (
+			clka => clk,
+			addra => rom_addr,
+			douta => rom_data);
+		
 	-- select row from ROM
 	process (ship_main_orient_reg, sq_ship_main_on, pix_y, ship_main_y_t)
 	begin
@@ -259,14 +255,24 @@ begin
 		end if;
 	end process;
 	
+	
+	--1st enemy instantiation
+	enemy_1: entity work.enemy(arch)
+		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
+			pixel_y=>pixel_y,refr_tick=>refr_tick,ship_enemy_on => ship_enemy_on,
+			ship_enemy_rgb=>ship_enemy_rgb  );
+
+	
 	-- output logic
-	process (video_on, ship_main_on, ship_rgb)
+	process (video_on, ship_main_on, ship_rgb, ship_enemy_on, ship_enemy_rgb)
 	begin
 		if (video_on = '0') then
 			graph_rgb <= (others=>'0'); -- blank
 		else -- priority encoding implicit here
 			if (ship_main_on = '1') then
 				graph_rgb <= ship_rgb;
+			elsif (ship_enemy_on ='1') then
+				graph_rgb <= ship_enemy_rgb;
 			else
 				graph_rgb <= "10011001"; -- bkgnd color
 			end if;

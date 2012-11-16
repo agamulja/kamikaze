@@ -9,33 +9,60 @@
          <spirit:instanceName>ship_rom</spirit:instanceName>
          <spirit:displayName></spirit:displayName>
          <spirit:description></spirit:description>
-         <spirit:componentRef spirit:vendor="xilinx.com" spirit:library="ip" spirit:name="dist_mem_gen" spirit:version="5.1" />
+         <spirit:componentRef spirit:vendor="xilinx.com" spirit:library="ip" spirit:name="blk_mem_gen" spirit:version="4.3" />
          <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="parameter_default_data">0</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_use_rstb_pin">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_pipeline_stages">0</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_reset_qspo">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_coefficient_file">C:\Users\Andrew Gamulja\Documents\VHDL\kamikaze\ship_initialize.coe</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_qualify_we_with_i_ce">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_reset_qdpo">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_common_output_clk">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_memory_type">rom</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_simple_dual_port_address">non_registered</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_default_data_radix">2</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_common_output_ce">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_depth">176</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_input_clock_enable">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_dual_port_address">non_registered</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_data_width">22</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_single_port_output_clock_enable">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_reset_qsdpo">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_sync_reset_qspo">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_dual_port_output_clock_enable">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_output_options">non_registered</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_sync_reset_qdpo">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_simple_dual_port_output_clock_enable">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_input_options">non_registered</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_ce_overrides">ce_overrides_sync_controls</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_sync_reset_qsdpo">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_assume_synchronous_clk">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_use_regcea_pin">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_load_init_file">true</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_softecc">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_port_a_write_rate">0</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_disable_collision_warnings">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_use_byte_write_enable">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_ecc">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_primitive">8kx2</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_port_b_clock">0</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_remaining_memory_locations">0</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_memory_type">Single_Port_ROM</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_port_a_clock">100</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_register_porta_input_of_softecc">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_disable_out_of_range_warnings">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_read_width_a">22</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_read_width_b">22</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_register_portb_output_of_softecc">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_byte_size">9</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_register_portb_output_of_memory_core">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_use_regceb_pin">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_register_porta_output_of_memory_core">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_reset_memory_latch_a">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_reset_memory_latch_b">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_register_porta_output_of_memory_primitives">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_use_error_injection_pins">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_enable_a">Always_Enabled</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_enable_b">Always_Enabled</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_port_a_enable_rate">100</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_write_depth_a">176</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_algorithm">Minimum_Area</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_output_reset_value_a">0</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_output_reset_value_b">0</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_error_injection_type">Single_Bit_Error_Injection</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_port_b_write_rate">0</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_ecctype">No_ECC</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_write_width_a">22</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_write_width_b">22</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_reset_priority_a">CE</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_reset_priority_b">CE</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_additional_inputs_for_power_estimation">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_operating_mode_a">WRITE_FIRST</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_operating_mode_b">WRITE_FIRST</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_reset_type">SYNC</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_register_portb_output_of_memory_primitives">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_port_b_enable_rate">0</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_use_rsta_pin">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_coe_file">C:\Users\Andrew Gamulja\Documents\VHDL\kamikaze\ship_initialize.coe</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_fill_remaining_memory_locations">false</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_collision_warnings">ALL</spirit:configurableElementValue>
          </spirit:configurableElementValues>
          <spirit:vendorExtensions>
             <xilinx:instanceProperties>
@@ -55,7 +82,7 @@
                <xilinx:busFormat>BusFormatAngleBracketNotRipped</xilinx:busFormat>
                <xilinx:designEntry>VHDL</xilinx:designEntry>
                <xilinx:asySymbol>true</xilinx:asySymbol>
-               <xilinx:flowVendor>Other</xilinx:flowVendor>
+               <xilinx:flowVendor>Foundation_ISE</xilinx:flowVendor>
                <xilinx:addPads>false</xilinx:addPads>
                <xilinx:removeRPMs>false</xilinx:removeRPMs>
                <xilinx:createNDF>false</xilinx:createNDF>
@@ -64,20 +91,17 @@
              </xilinx:flowOptions>
              <xilinx:simulationOptions>
                <xilinx:simulationModel>Behavioral</xilinx:simulationModel>
-               <xilinx:simulationLanguage>VHDL</xilinx:simulationLanguage>
+               <xilinx:simulationLanguage>VHDL_and_Verilog</xilinx:simulationLanguage>
                <xilinx:foundationSym>false</xilinx:foundationSym>
              </xilinx:simulationOptions>
            </xilinx:instanceProperties>
             <xilinx:generationHistory>
                <xilinx:fileSet>
-                  <xilinx:name>apply_current_project_options_generator</xilinx:name>
-               </xilinx:fileSet>
-               <xilinx:fileSet>
                   <xilinx:name>customization_generator</xilinx:name>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.mif</xilinx:name>
                      <xilinx:userFileType>mif</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:01 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:11 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0x0A683D99</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
@@ -86,53 +110,72 @@
                   <xilinx:file>
                      <xilinx:name>./ship_rom.xco</xilinx:name>
                      <xilinx:userFileType>xco</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:01 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x3E23394C</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:11 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xFB8B36C0</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
                   <xilinx:name>implementation_netlist_generator</xilinx:name>
                   <xilinx:file>
-                     <xilinx:name>./dist_mem_gen_ds322.pdf</xilinx:name>
+                     <xilinx:name>./blk_mem_gen_ds512.pdf</xilinx:name>
                      <xilinx:userFileType>pdf</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:20 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0xEFE1D156</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:29 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xFF542E99</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
-                     <xilinx:name>./dist_mem_gen_readme.txt</xilinx:name>
+                     <xilinx:name>./blk_mem_gen_readme.txt</xilinx:name>
                      <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:20 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x9CBACB81</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:29 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xED96AB8B</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.asy</xilinx:name>
                      <xilinx:userFileType>asy</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:02 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x5C7C5F35</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:13 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x622AF574</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.mif</xilinx:name>
                      <xilinx:userFileType>mif</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:02 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:13 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0x0A683D99</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.ngc</xilinx:name>
                      <xilinx:userFileType>ngc</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:32 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0xEB7850E5</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:35 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x683183A0</xilinx:checkSum>
+                  </xilinx:file>
+                  <xilinx:file>
+                     <xilinx:name>./ship_rom.sym</xilinx:name>
+                     <xilinx:userFileType>asy</xilinx:userFileType>
+                     <xilinx:userFileType>unknown</xilinx:userFileType>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:30 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xB8C6E62E</xilinx:checkSum>
+                  </xilinx:file>
+                  <xilinx:file>
+                     <xilinx:name>./ship_rom.v</xilinx:name>
+                     <xilinx:userFileType>verilog</xilinx:userFileType>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:29 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xC68AF495</xilinx:checkSum>
+                  </xilinx:file>
+                  <xilinx:file>
+                     <xilinx:name>./ship_rom.veo</xilinx:name>
+                     <xilinx:userFileType>veo</xilinx:userFileType>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:29 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x8DBDB98D</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.vhd</xilinx:name>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:20 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0xD3C81547</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:29 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xCA499730</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.vho</xilinx:name>
                      <xilinx:userFileType>vho</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:20 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x3A14C427</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:29 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x0BC05E4E</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -143,8 +186,8 @@
                   <xilinx:file>
                      <xilinx:name>./ship_rom.xco</xilinx:name>
                      <xilinx:userFileType>xco</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:39 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0xCEE93707</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:42 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xA8187001</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -153,8 +196,8 @@
                      <xilinx:name>./ship_rom_xmdf.tcl</xilinx:name>
                      <xilinx:userFileType>tclXmdf</xilinx:userFileType>
                      <xilinx:userFileType>tcl</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:39 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0xDFB95DC3</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:42 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xFE3D7646</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -163,34 +206,26 @@
                      <xilinx:name>./_xmsgs/pn_parser.xmsgs</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:41 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:44 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0xA0596064</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.gise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>gise</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:41 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0xA95B7195</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:44 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x13159D07</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./ship_rom.xise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>xise</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:41 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x8A80B104</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:44 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x6BC452CD</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
                   <xilinx:name>deliver_readme_generator</xilinx:name>
-                  <xilinx:file>
-                     <xilinx:name>./ship_rom_readme.txt</xilinx:name>
-                     <xilinx:userFileType>ignore</xilinx:userFileType>
-                     <xilinx:userFileType>txtReadme</xilinx:userFileType>
-                     <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:41 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x53D051B3</xilinx:checkSum>
-                  </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
                   <xilinx:name>flist_generator</xilinx:name>
@@ -199,8 +234,8 @@
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>txtFlist</xilinx:userFileType>
                      <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Wed Nov 14 22:10:41 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x2FA3A256</xilinx:checkSum>
+                     <xilinx:timeStamp>Thu Nov 15 23:39:44 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x80133B2F</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -229,7 +264,7 @@
          <xilinx:busFormat>BusFormatAngleBracketNotRipped</xilinx:busFormat>
          <xilinx:designEntry>VHDL</xilinx:designEntry>
          <xilinx:asySymbol>true</xilinx:asySymbol>
-         <xilinx:flowVendor>Other</xilinx:flowVendor>
+         <xilinx:flowVendor>Foundation_ISE</xilinx:flowVendor>
          <xilinx:addPads>false</xilinx:addPads>
          <xilinx:removeRPMs>false</xilinx:removeRPMs>
          <xilinx:createNDF>false</xilinx:createNDF>
@@ -238,7 +273,7 @@
        </xilinx:flowOptions>
        <xilinx:simulationOptions>
          <xilinx:simulationModel>Behavioral</xilinx:simulationModel>
-         <xilinx:simulationLanguage>VHDL</xilinx:simulationLanguage>
+         <xilinx:simulationLanguage>VHDL_and_Verilog</xilinx:simulationLanguage>
          <xilinx:foundationSym>false</xilinx:foundationSym>
        </xilinx:simulationOptions>
      </xilinx:instanceProperties>

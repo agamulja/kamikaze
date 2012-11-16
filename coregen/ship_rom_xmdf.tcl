@@ -36,11 +36,11 @@ utilities_xmdf::xmdfSetData $instance FileSet $fcount type logical_library
 utilities_xmdf::xmdfSetData $instance FileSet $fcount logical_library unisim
 incr fcount
 
-utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path dist_mem_gen_ds322.pdf
+utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path blk_mem_gen_ds512.pdf
 utilities_xmdf::xmdfSetData $instance FileSet $fcount type AnyView
 incr fcount
 
-utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path dist_mem_gen_readme.txt
+utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path blk_mem_gen_readme.txt
 utilities_xmdf::xmdfSetData $instance FileSet $fcount type text
 incr fcount
 
@@ -54,6 +54,18 @@ incr fcount
 
 utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path ship_rom.ngc
 utilities_xmdf::xmdfSetData $instance FileSet $fcount type ngc
+incr fcount
+
+utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path ship_rom.sym
+utilities_xmdf::xmdfSetData $instance FileSet $fcount type symbol
+incr fcount
+
+utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path ship_rom.v
+utilities_xmdf::xmdfSetData $instance FileSet $fcount type verilog
+incr fcount
+
+utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path ship_rom.veo
+utilities_xmdf::xmdfSetData $instance FileSet $fcount type verilog_template
 incr fcount
 
 utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path ship_rom.vhd
