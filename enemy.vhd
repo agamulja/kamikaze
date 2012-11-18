@@ -6,8 +6,11 @@ entity enemy is
 	port(
 		clk, reset, refr_tick: in std_logic;
 		pixel_x, pixel_y: in std_logic_vector(9 downto 0);
+		ship_main_y: in std_logic_vector(9 downto 0);
+		ship_main_x: in std_logic_vector(9 downto 0);
 		ship_enemy_rgb: out std_logic_vector(7 downto 0);
-		ship_enemy_on: out std_logic
+		ship_enemy_on: out std_logic;
+		led: out std_logic
 	);
 end enemy;
 
@@ -32,7 +35,9 @@ architecture arch of enemy is
 	signal ship_enemy_x_r: unsigned(9 downto 0);
 	signal ship_enemy_x_reg, ship_enemy_x_next: unsigned(9 downto 0);
 	signal sq_ship_enemy_on: std_logic; -- signal to indicate scan coord is within enemy ship
-	--------- end enemy ship signal declaration-------
+	
+	-- Enemy ship orientation
+	signal ship_enemy_orient_reg, ship_enemy_orient_next: unsigned(2 downto 0);
 
 	--Enemy ship rom address
 	signal rom_addr: std_logic_vector(ROM_ADDR_SIZE-1 downto 0);	
@@ -40,9 +45,18 @@ architecture arch of enemy is
 	signal rom_col: unsigned(ROM_COL_SIZE-1 downto 0);
 	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
 	signal rom_bit: std_logic;
-
-	-- Enemy ship orientation
-	signal ship_enemy_orient_reg, ship_enemy_orient_next: unsigned(2 downto 0);
+	
+	-- FSMD states, registers and signals for the use in tracking algorithm
+	type state_type is (idle, move_right, move_up, move_left, move_down,
+							  load1, load2, load3, load4, op1, op2, op3);
+	signal state_reg, state_next: state_type;
+	signal min_dist_reg, min_dist_next: unsigned(9 downto 0); -- register to store the minimum distance
+	signal dist_reg, dist_next: unsigned(9 downto 0); -- register to store distance for comparison
+	signal ready: std_logic;
+	signal pix_x_main, pix_y_main: unsigned(9 downto 0);
+	signal pix_x_enemy, pix_y_enemy: unsigned(9 downto 0);
+	signal region_x, region_y: std_logic;
+	signal ship_main_region: std_logic_vector(1 downto 0);
 
 begin
 
@@ -53,13 +67,15 @@ begin
 	begin
 		if (reset='1') then
 			--enemy ship
-			ship_enemy_y_reg <= to_unsigned(MAX_Y/4, 10);
+			ship_enemy_y_reg <= to_unsigned(MAX_Y/2, 10);
 			ship_enemy_x_reg <= to_unsigned(MAX_X/2, 10);
 			ship_enemy_orient_reg <= ("100");
+			state_reg <= idle;
 		elsif (clk'event and clk='1') then
 			ship_enemy_y_reg <= ship_enemy_y_next;
 			ship_enemy_x_reg <= ship_enemy_x_next;
 			ship_enemy_orient_reg <= ship_enemy_orient_next;
+			state_reg <= state_next;
 		end if;
 	end process;
 
@@ -75,7 +91,7 @@ begin
 									else '0';
 
 	-- map scan coord to ROM addr/col
-	ship_main_rom : entity work.ship_rom
+	ship_enemy_rom : entity work.ship_rom
 		port map (
 			clka => clk,
 			addra => rom_addr,
@@ -84,7 +100,7 @@ begin
 	-- select row from Enemy ROM
 	process (ship_enemy_orient_reg, sq_ship_enemy_on, pix_y, ship_enemy_y_t)
 	begin
-			rom_addr_num <= (others=>'0');
+		rom_addr_num <= (others=>'0');
 		if sq_ship_enemy_on = '1' then
 			case ship_enemy_orient_reg is
 				when "000" =>
@@ -114,14 +130,123 @@ begin
 		end if;
 	end process;
 
-	-- Enemy ship on and color
+	-- enemy ship access bit 
 	rom_addr <= std_logic_vector(rom_addr_num);
 	rom_col <= resize(pix_x-ship_enemy_x_l, ROM_COL_SIZE) when sq_ship_enemy_on = '1' else (others=>'0');
 	rom_bit <= rom_data(to_integer(SHIP_SIZE-1-rom_col));
 	
+	
+	-- process main ship tracking algorithm (using FSMD)
+	pix_x_main <= unsigned(ship_main_x) + (SHIP_SIZE/2)-1; 	-- center x pixel of main ship
+	pix_y_main <= unsigned(ship_main_y) + (SHIP_SIZE/2)-1; 	-- center y pixel of main ship
+	pix_x_enemy <= ship_enemy_x_reg + (SHIP_SIZE/2)-1; 		-- center x pixel of enemy ship
+	pix_y_enemy <= ship_enemy_y_reg + (SHIP_SIZE/2)-1;			-- center y pixel of enemy ship
+	
+	region_x <= '1' when (pix_x_main < pix_x_enemy) else '0';
+	region_y <= '1' when (pix_y_main > pix_y_enemy) else '0';
+	ship_main_region <= region_y & region_x;
+	
+	process(state_reg, refr_tick, ship_main_region, ship_enemy_x_reg, ship_enemy_y_reg,
+			  min_dist_reg, dist_reg, min_dist_next, dist_next, pix_x_main, pix_x_enemy,
+			  pix_y_main, pix_y_enemy)
+	begin
+	
+		-- default values
+		ship_enemy_x_next <= ship_enemy_x_reg;
+		ship_enemy_y_next <= ship_enemy_y_reg;
+		min_dist_next <= min_dist_reg;
+		dist_next <= dist_reg;
+		ready <= '0';
+		
+		case state_reg is
+			when idle =>
+				ready <= '1';
+				if (refr_tick='1') then
+					case ship_main_region is	
+						when "00" => -- first quadrant
+							if (pix_y_main=pix_y_enemy) then
+								state_next <= move_right;
+							elsif (pix_x_main=pix_x_enemy) then
+								state_next <= move_up;
+							else
+								state_next <= load1;
+							end if;
+							
+						when "01" => -- second quadrant
+							if (pix_y_main=pix_y_enemy) then
+								state_next <= move_left;
+							else
+								state_next <= load2;
+							end if;
+								
+						when "11" => -- third quadrant
+							state_next <= load3;
+							
+						when others => -- fourth quadrant
+							if (pix_x_main=pix_x_enemy) then
+								state_next <= move_down;
+							else
+								state_next <= load4;
+							end if;
+					end case;
+				else
+					state_next <= idle;
+				end if;
+				
+			when move_right =>
+				ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
+				ship_enemy_orient_next <= "010";
+				state_next <= idle;
+				
+			when move_up =>
+				ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+				ship_enemy_orient_next <= "000";
+				state_next <= idle;
+				
+			when load1 =>
+				min_dist_next <= ((pix_y_enemy-SHIP_V) - pix_y_main) +
+									  (pix_x_main - pix_x_enemy);
+				dist_next <= ((pix_y_enemy-SHIP_V) - pix_y_main) +
+								 (pix_x_main - (pix_x_enemy+SHIP_V));
+								 
+				if (min_dist_next < dist_next) then
+					state_next <= load1_comp1;
+				else
+					state_next <= load1_comp2;
+				end if;
+				
+			when load1_comp1 => -- likely to move up
+				dist_next <= (pix_y_enemy - pix_y_main) +
+								 (pix_x_main - (pix_x_enemy+SHIP_V));
+				if (min_dist_reg < dist_next) then
+					state_next <= move_up;
+				else
+					state_next <= move_right;
+				end if;
+				
+			when load1_comp2 => -- likely to move at 45 degree direction
+				min_dist_next <= dist_reg;
+				dist_next <= (pix_y_enemy - pix_y_main) +
+								 (pix_x_main - (pix_x_enemy+SHIP_V));
+				if (min_dist_next < dist_next) then
+					state_next <= move_45_degree;
+				else
+					state_next <= move_right;
+				end if;
+				
+			when move_45_degree =>
+				ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
+				ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+				ship_enemy_orient_next <= "001";
+				state_next <= idle;
+		
+	end process;
+	
 	-- Outputs
 	ship_enemy_on <= '1' when (sq_ship_enemy_on = '1') and (rom_bit = '1') else '0';
 	ship_enemy_rgb <= "00000000"; -- color of the enemy ship
+	
+	led <= '1' when ship_enemy_y_reg = MAX_Y/2 else '0';
 	
 end arch;
 
