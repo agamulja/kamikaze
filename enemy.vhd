@@ -47,12 +47,16 @@ architecture arch of enemy is
 	signal rom_bit: std_logic;
 	
 	-- FSMD states, registers and signals for the use in tracking algorithm
-	type state_type is (idle, move_right, move_up, move_left, move_down,
-							  load1, load2, load3, load4, op1, op2, op3);
+	type state_type is (idle, move_right, move_45_degree, move_up, move_135_degree,
+							  move_left, move_225_degree, move_down, move_315_degree,
+							  load1, load1_comp1, load1_comp2, 
+							  load2, load2_comp1, load2_comp2,
+							  load3, load3_comp1, load3_comp2,
+							  load4, load4_comp1, load4_comp2);
 	signal state_reg, state_next: state_type;
 	signal min_dist_reg, min_dist_next: unsigned(9 downto 0); -- register to store the minimum distance
 	signal dist_reg, dist_next: unsigned(9 downto 0); -- register to store distance for comparison
-	signal ready: std_logic;
+	signal ready, start: std_logic;
 	signal pix_x_main, pix_y_main: unsigned(9 downto 0);
 	signal pix_x_enemy, pix_y_enemy: unsigned(9 downto 0);
 	signal region_x, region_y: std_logic;
@@ -67,14 +71,18 @@ begin
 	begin
 		if (reset='1') then
 			--enemy ship
-			ship_enemy_y_reg <= to_unsigned(MAX_Y/2, 10);
-			ship_enemy_x_reg <= to_unsigned(MAX_X/2, 10);
+			ship_enemy_y_reg <= (others=>'0');
+			ship_enemy_x_reg <= (others=>'0');
 			ship_enemy_orient_reg <= ("100");
+			min_dist_reg <= (others=>'0');
+			dist_reg <= (others=>'0');
 			state_reg <= idle;
 		elsif (clk'event and clk='1') then
 			ship_enemy_y_reg <= ship_enemy_y_next;
 			ship_enemy_x_reg <= ship_enemy_x_next;
 			ship_enemy_orient_reg <= ship_enemy_orient_next;
+			min_dist_reg <= min_dist_next;
+			dist_reg <= dist_next;
 			state_reg <= state_next;
 		end if;
 	end process;
@@ -145,15 +153,17 @@ begin
 	region_x <= '1' when (pix_x_main < pix_x_enemy) else '0';
 	region_y <= '1' when (pix_y_main > pix_y_enemy) else '0';
 	ship_main_region <= region_y & region_x;
+	start <= '1' when (refr_tick='1' and ready='1') else '0';
 	
-	process(state_reg, refr_tick, ship_main_region, ship_enemy_x_reg, ship_enemy_y_reg,
-			  min_dist_reg, dist_reg, min_dist_next, dist_next, pix_x_main, pix_x_enemy,
-			  pix_y_main, pix_y_enemy)
+	process(state_reg, start, ship_main_region, ship_enemy_x_reg, ship_enemy_y_reg,
+			  ship_enemy_orient_reg, min_dist_reg, dist_reg, min_dist_next, dist_next, 
+			  pix_x_main, pix_x_enemy,	pix_y_main, pix_y_enemy)
 	begin
 	
 		-- default values
 		ship_enemy_x_next <= ship_enemy_x_reg;
 		ship_enemy_y_next <= ship_enemy_y_reg;
+		ship_enemy_orient_next <= ship_enemy_orient_reg;
 		min_dist_next <= min_dist_reg;
 		dist_next <= dist_reg;
 		ready <= '0';
@@ -161,7 +171,7 @@ begin
 		case state_reg is
 			when idle =>
 				ready <= '1';
-				if (refr_tick='1') then
+				if (start='1') then
 					case ship_main_region is	
 						when "00" => -- first quadrant
 							if (pix_y_main=pix_y_enemy) then
@@ -198,9 +208,43 @@ begin
 				ship_enemy_orient_next <= "010";
 				state_next <= idle;
 				
+			when move_45_degree =>
+				ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
+				ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+				ship_enemy_orient_next <= "001";
+				state_next <= idle;
+				
 			when move_up =>
 				ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
 				ship_enemy_orient_next <= "000";
+				state_next <= idle;
+				
+			when move_135_degree =>
+				ship_enemy_x_next <= ship_enemy_x_reg - SHIP_V;
+				ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+				ship_enemy_orient_next <= "111";
+				state_next <= idle;
+				
+			when move_left =>
+				ship_enemy_x_next <= ship_enemy_x_reg - SHIP_V;
+				ship_enemy_orient_next <= "110";
+				state_next <= idle;
+				
+			when move_225_degree =>
+				ship_enemy_x_next <= ship_enemy_x_reg - SHIP_V;
+				ship_enemy_y_next <= ship_enemy_y_reg + SHIP_V;
+				ship_enemy_orient_next <= "101";
+				state_next <= idle;
+				
+			when move_down =>
+				ship_enemy_y_next <= ship_enemy_y_reg + SHIP_V;
+				ship_enemy_orient_next <= "100";
+				state_next <= idle;
+				
+			when move_315_degree =>
+				ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
+				ship_enemy_y_next <= ship_enemy_y_reg + SHIP_V;
+				ship_enemy_orient_next <= "011";
 				state_next <= idle;
 				
 			when load1 =>
@@ -234,12 +278,100 @@ begin
 					state_next <= move_right;
 				end if;
 				
-			when move_45_degree =>
-				ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
-				ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
-				ship_enemy_orient_next <= "001";
-				state_next <= idle;
-		
+			when load2 =>
+				min_dist_next <= ((pix_y_enemy-SHIP_V) - pix_y_main) +
+									  (pix_x_enemy - pix_x_main);
+				dist_next <= ((pix_y_enemy-SHIP_V) - pix_y_main) +
+								 ((pix_x_enemy-SHIP_V) - pix_x_main);
+								 
+				if (min_dist_next < dist_next) then
+					state_next <= load2_comp1;
+				else
+					state_next <= load2_comp2;
+				end if;
+				
+			when load2_comp1 => -- likely to move up
+				dist_next <= (pix_y_enemy - pix_y_main) +
+								 ((pix_x_enemy-SHIP_V) - pix_x_main);
+				if (min_dist_reg < dist_next) then
+					state_next <= move_up;
+				else
+					state_next <= move_left;
+				end if;
+				
+			when load2_comp2 => -- likely to move at 135 degree direction
+				min_dist_next <= dist_reg;
+				dist_next <= (pix_y_enemy - pix_y_main) +
+								 ((pix_x_enemy-SHIP_V) - pix_x_main);
+				if (min_dist_next < dist_next) then
+					state_next <= move_135_degree;
+				else
+					state_next <= move_left;
+				end if;
+				
+			when load3 =>
+				min_dist_next <= (pix_y_main - (pix_y_enemy+SHIP_V)) +
+									  (pix_x_enemy - pix_x_main);
+				dist_next <= (pix_y_main - (pix_y_enemy+SHIP_V)) +
+								 ((pix_x_enemy-SHIP_V) - pix_x_main);
+								 
+				if (min_dist_next < dist_next) then
+					state_next <= load3_comp1;
+				else
+					state_next <= load3_comp2;
+				end if;
+				
+			when load3_comp1 => -- likely to move down
+				dist_next <= (pix_y_main - pix_y_enemy) +
+								 ((pix_x_enemy-SHIP_V) - pix_x_main);
+				if (min_dist_reg < dist_next) then
+					state_next <= move_down;
+				else
+					state_next <= move_left;
+				end if;
+				
+			when load3_comp2 => -- likely to move at 225 degree direction
+				min_dist_next <= dist_reg;
+				dist_next <= (pix_y_main - pix_y_enemy) +
+								 ((pix_x_enemy-SHIP_V) - pix_x_main);
+				if (min_dist_next < dist_next) then
+					state_next <= move_225_degree;
+				else
+					state_next <= move_left;
+				end if;
+				
+			when load4 =>
+				min_dist_next <= (pix_y_main - (pix_y_enemy+SHIP_V)) +
+									  (pix_x_main - pix_x_enemy);
+				dist_next <= (pix_y_main - (pix_y_enemy+SHIP_V)) +
+								 (pix_x_main - (pix_x_enemy+SHIP_V));
+								 
+				if (min_dist_next < dist_next) then
+					state_next <= load4_comp1;
+				else
+					state_next <= load4_comp2;
+				end if;
+				
+			when load4_comp1 => -- likely to move down
+				dist_next <= (pix_y_main - pix_y_enemy) +
+								 (pix_x_main - (pix_x_enemy+SHIP_V));
+				if (min_dist_reg < dist_next) then
+					state_next <= move_down;
+				else
+					state_next <= move_right;
+				end if;
+				
+			when load4_comp2 => -- likely to move at 315 degree direction
+				min_dist_next <= dist_reg;
+				dist_next <= (pix_y_main - pix_y_enemy) +
+								 (pix_x_main - (pix_x_enemy+SHIP_V));
+				if (min_dist_next < dist_next) then
+					state_next <= move_315_degree;
+				else
+					state_next <= move_right;
+				end if;
+					
+		end case;
 	end process;
 	
 	-- Outputs
