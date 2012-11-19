@@ -43,4 +43,4 @@ NET "hsync" 	LOC = "T4"; # Bank = 2, Pin name = IO_L03N_2/MOSI/CSI_B, Type = DUA
 NET "vsync" 	LOC = "U3"; # Bank = 2, Pin name = IO_L01P_2/CSO_B, Type = DUAL, Sch name = VSYNC
 
 # LEDs
-# NET "led"		LOC = "J14";
+NET "led"		LOC = "J14";
