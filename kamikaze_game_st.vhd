@@ -259,8 +259,9 @@ begin
 	--1st enemy instantiation
 	enemy_1: entity work.enemy(arch)
 		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
-			pixel_y=>pixel_y,refr_tick=>refr_tick,ship_enemy_on => ship_enemy_on,
-			ship_enemy_rgb=>ship_enemy_rgb  );
+			pixel_y=>pixel_y, refr_tick=>refr_tick, ship_main_y=> std_logic_vector(ship_main_y_reg),
+			ship_main_x=>std_logic_vector(ship_main_x_reg), ship_enemy_on => ship_enemy_on,
+			ship_enemy_rgb=>ship_enemy_rgb, led=>led);
 
 	
 	-- output logic
@@ -278,8 +279,5 @@ begin
 			end if;
 		end if;
 	end process;
-	
-	
-	led <= '1' when ship_main_orient_reg = 2 else '0';
 	
 end arch;
