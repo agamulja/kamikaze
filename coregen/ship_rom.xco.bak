@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 12.4
-# Date: Thu Nov 15 23:18:22 2012
+# Date: Thu Nov 15 23:39:42 2012
 #
 ##############################################################
 #
@@ -20,7 +20,7 @@ SET createndf = false
 SET designentry = VHDL
 SET device = xc3s500e
 SET devicefamily = spartan3e
-SET flowvendor = Other
+SET flowvendor = Foundation_ISE
 SET formalverification = false
 SET foundationsym = false
 SET implementationfiletype = Ngc
@@ -28,7 +28,7 @@ SET package = fg320
 SET removerpms = false
 SET simulationfiles = Behavioral
 SET speedgrade = -5
-SET verilogsim = false
+SET verilogsim = true
 SET vhdlsim = true
 # END Project Options
 # BEGIN Select
@@ -90,4 +90,4 @@ CSET write_width_a=22
 CSET write_width_b=22
 # END Parameters
 GENERATE
-# CRC: 53dd32c4
+# CRC:  e6da837

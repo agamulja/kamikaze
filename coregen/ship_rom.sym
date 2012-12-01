@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <symbol version="7" name="ship_rom">
     <symboltype>BLOCK</symboltype>
-    <timestamp>2012-11-15T23:39:13</timestamp>
+    <timestamp>2012-11-30T20:34:49</timestamp>
     <pin polarity="Input" x="0" y="80" name="addra[7:0]" />
     <pin polarity="Input" x="0" y="272" name="clka" />
     <pin polarity="Output" x="576" y="80" name="douta[21:0]" />

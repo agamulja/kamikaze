@@ -15,8 +15,6 @@ XST: HDL Compilation
 XST: Design Hierarchy Analysis
 XST: HDL Analysis
 XST: HDL Synthesis
-XST: Advanced HDL Synthesis
-XST: Low Level Synthesis
 Generating Implementation files.
 Generating ISE symbol file...
 Generating NGC file.
