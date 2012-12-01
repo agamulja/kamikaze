@@ -6,8 +6,10 @@ entity enemy is
 	port(
 		clk, reset, refr_tick: in std_logic;
 		pixel_x, pixel_y: in std_logic_vector(9 downto 0);
-		ship_main_y: in std_logic_vector(9 downto 0);
-		ship_main_x: in std_logic_vector(9 downto 0);
+		ship_main_y_t, ship_main_y_b: in std_logic_vector(9 downto 0);
+		ship_main_x_l, ship_main_x_r: in std_logic_vector(9 downto 0);
+		bullet_y_t, bullet_y_b: in std_logic_vector(9 downto 0);
+		bullet_x_l, bullet_x_r: in std_logic_vector(9 downto 0);
 		ship_enemy_rgb: out std_logic_vector(7 downto 0);
 		ship_enemy_on: out std_logic;
 		led: out std_logic
@@ -39,12 +41,6 @@ architecture arch of enemy is
 	-- Enemy ship orientation
 	signal ship_enemy_orient_reg, ship_enemy_orient_next: unsigned(2 downto 0);
 	
-	-- main ship borders
-	signal ship_main_y_t: unsigned(9 downto 0);
-	signal ship_main_y_b: unsigned(9 downto 0);
-	signal ship_main_x_l: unsigned(9 downto 0);
-	signal ship_main_x_r: unsigned(9 downto 0);
-
 	--Enemy ship rom address
 	signal rom_addr: std_logic_vector(ROM_ADDR_SIZE-1 downto 0);	
 	signal rom_addr_num: unsigned(ROM_ADDR_SIZE-1 downto 0);
@@ -67,7 +63,7 @@ architecture arch of enemy is
 	signal pix_x_enemy, pix_y_enemy: unsigned(9 downto 0);
 	signal region_x, region_y: std_logic;
 	signal ship_main_region: std_logic_vector(1 downto 0);
-	signal ship_main_hit: std_logic;
+	signal ship_main_hit, enemy_hit: std_logic;
 
 begin
 
@@ -98,10 +94,6 @@ begin
 	ship_enemy_y_b <= ship_enemy_y_t + SHIP_SIZE-1;
 	ship_enemy_x_l <= ship_enemy_x_reg;
 	ship_enemy_x_r <= ship_enemy_x_l + SHIP_SIZE-1;
-	ship_main_y_t <= unsigned(ship_main_y);
-	ship_main_y_b <= ship_main_y_t + SHIP_SIZE-1;
-	ship_main_x_l <= unsigned(ship_main_x);
-	ship_main_x_r <= ship_main_x_l + SHIP_SIZE-1;
 			
 	-- Determine whether current pixel is within enemy ship box
 	sq_ship_enemy_on <= '1' when (ship_enemy_x_l <= pix_x) and	(pix_x <= ship_enemy_x_r) and
@@ -154,9 +146,9 @@ begin
 	rom_bit <= rom_data(to_integer(SHIP_SIZE-1-rom_col));
 	
 	
-	-- process main ship tracking algorithm (using FSMD)
-	pix_x_main <= unsigned(ship_main_x) + (SHIP_SIZE/2)-1; 	-- center x pixel of main ship
-	pix_y_main <= unsigned(ship_main_y) + (SHIP_SIZE/2)-1; 	-- center y pixel of main ship
+	-- signals to use in the tracking algorithm
+	pix_x_main <= unsigned(ship_main_x_l) + (SHIP_SIZE/2)-1; 	-- center x pixel of main ship
+	pix_y_main <= unsigned(ship_main_y_t) + (SHIP_SIZE/2)-1; 	-- center y pixel of main ship
 	pix_x_enemy <= ship_enemy_x_reg + (SHIP_SIZE/2)-1; 		-- center x pixel of enemy ship
 	pix_y_enemy <= ship_enemy_y_reg + (SHIP_SIZE/2)-1;			-- center y pixel of enemy ship
 	
@@ -165,21 +157,35 @@ begin
 	ship_main_region <= region_y & region_x;
 	start <= '1' when (refr_tick='1' and ready='1') else '0';
 	
+	-- signals ship_main hit
 	process(ship_enemy_y_b, ship_enemy_y_t, ship_enemy_x_l, ship_enemy_x_r,
 			  ship_main_y_b, ship_main_y_t, ship_main_x_l, ship_main_x_r)
 	begin
 		ship_main_hit <= '0';
-		if (ship_enemy_y_b >= ship_main_y_t) and (ship_enemy_y_t <= ship_main_y_b) then
-			if (ship_enemy_x_l <= ship_main_x_r) and (ship_enemy_x_r >= ship_main_x_l) then
+		if (ship_enemy_y_b >= unsigned(ship_main_y_t)) and (ship_enemy_y_t <= unsigned(ship_main_y_b)) then
+			if (ship_enemy_x_l <= unsigned(ship_main_x_r)) and (ship_enemy_x_r >= unsigned(ship_main_x_l)) then
 				ship_main_hit <= '1';
 			end if;
 		end if;
 	end process;
 	
+	-- signals enemy hit
+	process(ship_enemy_y_b, ship_enemy_y_t, ship_enemy_x_l, ship_enemy_x_r,
+			  bullet_y_b, bullet_y_t, bullet_x_l, bullet_x_r)
+	begin
+		enemy_hit <= '0';
+		if (ship_enemy_y_b >= unsigned(bullet_y_t)) and (ship_enemy_y_t <= unsigned(bullet_y_b)) then
+			if (ship_enemy_x_l <= unsigned(bullet_x_r)) and (ship_enemy_x_r >= unsigned(bullet_x_l)) then
+				enemy_hit <= '1';
+			end if;
+		end if;
+	end process;
 	
+	
+	-- Process the tracking algorithm using FSMD
 	process(state_reg, start, ship_main_region, ship_enemy_x_reg, ship_enemy_y_reg,
 			  ship_enemy_orient_reg, min_dist_reg, dist_reg, min_dist_next, dist_next, 
-			  pix_x_main, pix_x_enemy,	pix_y_main, pix_y_enemy, ship_main_hit)
+			  pix_x_main, pix_x_enemy,	pix_y_main, pix_y_enemy, ship_main_hit, enemy_hit)
 			  
 	begin
 	
@@ -197,7 +203,12 @@ begin
 				if (start='1') then
 					if (ship_main_hit='1') then
 						state_next <= idle;
+					elsif (enemy_hit='1') then
+						state_next <= idle;
+						ship_enemy_x_next <= (others=>'0');
+						ship_enemy_y_next <= (others=>'0');
 					else
+					
 						case ship_main_region is	
 							when "00" => -- first quadrant
 								if (pix_y_main=pix_y_enemy) then
