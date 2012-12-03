@@ -24,6 +24,13 @@ architecture arch of kamikaze_graph_st is
 	constant BULLET_SIZE: integer := 8;		-- size of bullet box
 	constant ROM_ADDR_SIZE: integer := 8;	--	size of rom_addr (bits)
 	constant ROM_COL_SIZE: integer := 5;	-- size of rom_col signal used to access every column
+	constant ENEMY1_X_POS, ENEMY1_Y_POS: std_logic_vector(9 downto 0) := (others=>'0');
+	constant ENEMY2_X_POS: std_logic_vector(9 downto 0) := "1001101001";
+	constant ENEMY2_Y_POS: std_logic_vector(9 downto 0) := (others=>'0');
+	constant ENEMY3_X_POS: std_logic_vector(9 downto 0) := (others=>'0');
+	constant ENEMY3_Y_POS: std_logic_vector(9 downto 0) := "0111001001";
+	constant ENEMY4_X_POS: std_logic_vector(9 downto 0) := "1001101001";
+	constant ENEMY4_Y_POS: std_logic_vector(9 downto 0) := "0111001001";
 	
 	-- bullet image rom
 	type rom_type is array(0 to BULLET_SIZE-1) of std_logic_vector(0 to BULLET_SIZE-1);
@@ -62,12 +69,13 @@ architecture arch of kamikaze_graph_st is
 	signal bullet_direction_reg, bullet_direction_next: unsigned(2 downto 0);
 	signal sq_bullet_on, rd_bullet_on: std_logic;
 	signal bullet_rgb: std_logic_vector(7 downto 0);
+	signal hit_by_enemy: std_logic_vector(3 downto 0);
 	
 	-- signal to indicate if scan coord is whithin the ship
 	signal sq_ship_main_on: std_logic;
 	signal ship_main_on: std_logic;
 	signal ship_rgb: std_logic_vector(7 downto 0);
-	signal ship_enemy_on: std_logic;
+	signal ship_enemy_on: std_logic_vector(3 downto 0);
 	signal ship_enemy_rgb: std_logic_vector(7 downto 0);
 
 	-- signal to be used for main ship ROM
@@ -471,16 +479,48 @@ begin
 	end process;
 	
 	
-	--1st enemy instantiation
+	-- 1st enemy instantiation
 	enemy_1: entity work.enemy(arch)
+		generic map(X=>ENEMY1_X_POS, Y=>ENEMY1_Y_POS)
 		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
 			pixel_y=>pixel_y, refr_tick=>refr_tick, ship_main_y_t=>std_logic_vector(ship_main_y_t),
 			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
-			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on,
-			ship_enemy_rgb=>ship_enemy_rgb, led=>led);
-
+			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(0), led=>hit_by_enemy(0));
+			
+	-- 2nd enemy instantiation
+	enemy_2: entity work.enemy(arch)
+		generic map(X=>ENEMY2_X_POS, Y=>ENEMY2_Y_POS)
+		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
+			pixel_y=>pixel_y, refr_tick=>refr_tick, ship_main_y_t=>std_logic_vector(ship_main_y_t),
+			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
+			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
+			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
+			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(1), led=>hit_by_enemy(1));
+			
+	-- 3rd enemy instantiation
+	enemy_3: entity work.enemy(arch)
+		generic map(X=>ENEMY3_X_POS, Y=>ENEMY3_Y_POS)
+		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
+			pixel_y=>pixel_y, refr_tick=>refr_tick, ship_main_y_t=>std_logic_vector(ship_main_y_t),
+			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
+			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
+			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
+			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(2), led=>hit_by_enemy(2));
+			
+	-- 4th enemy instantiation
+	enemy_4: entity work.enemy(arch)
+		generic map(X=>ENEMY4_X_POS, Y=>ENEMY4_Y_POS)
+		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
+			pixel_y=>pixel_y, refr_tick=>refr_tick, ship_main_y_t=>std_logic_vector(ship_main_y_t),
+			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
+			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
+			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
+			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(3), led=>hit_by_enemy(3));
+			
+	ship_enemy_rgb <= "00000000"; -- color of the enemy ship
+	led <= hit_by_enemy(0) or hit_by_enemy(1) or hit_by_enemy(2) or hit_by_enemy(3);
 	
 	-- output logic
 	process (video_on, ship_main_on, ship_rgb, ship_enemy_on, ship_enemy_rgb, rd_bullet_on, bullet_rgb)
@@ -488,11 +528,12 @@ begin
 		if (video_on = '0') then
 			graph_rgb <= (others=>'0'); -- blank
 		else -- priority encoding implicit here
-			if (ship_main_on = '1') then
+			if (ship_main_on='1') then
 				graph_rgb <= ship_rgb;
-			elsif (rd_bullet_on = '1') then
+			elsif (rd_bullet_on='1') then
 				graph_rgb <= bullet_rgb;			
-			elsif (ship_enemy_on ='1') then
+			elsif (ship_enemy_on(0)='1') or (ship_enemy_on(1)='1') or (ship_enemy_on(2)='1') or 
+					(ship_enemy_on(3)='1') then
 				graph_rgb <= ship_enemy_rgb;
 			else
 				graph_rgb <= "10011001"; -- bkgnd color

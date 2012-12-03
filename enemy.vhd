@@ -3,6 +3,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
 
 entity enemy is
+	generic(
+		X: std_logic_vector(9 downto 0) := (others=>'0');
+		Y: std_logic_vector(9 downto 0) := (others=>'0')
+	);
 	port(
 		clk, reset, refr_tick: in std_logic;
 		pixel_x, pixel_y: in std_logic_vector(9 downto 0);
@@ -10,7 +14,6 @@ entity enemy is
 		ship_main_x_l, ship_main_x_r: in std_logic_vector(9 downto 0);
 		bullet_y_t, bullet_y_b: in std_logic_vector(9 downto 0);
 		bullet_x_l, bullet_x_r: in std_logic_vector(9 downto 0);
-		ship_enemy_rgb: out std_logic_vector(7 downto 0);
 		ship_enemy_on: out std_logic;
 		led: out std_logic
 	);
@@ -73,8 +76,8 @@ begin
 	process(clk, reset)
 	begin
 		if (reset='1') then
-			ship_enemy_y_reg <= (others=>'0');
-			ship_enemy_x_reg <= (others=>'0');
+			ship_enemy_y_reg <= unsigned(Y);
+			ship_enemy_x_reg <= unsigned(X);
 			ship_enemy_orient_reg <= ("100");
 			min_dist_reg <= (others=>'0');
 			dist_reg <= (others=>'0');
@@ -205,8 +208,8 @@ begin
 						state_next <= idle;
 					elsif (enemy_hit='1') then
 						state_next <= idle;
-						ship_enemy_x_next <= (others=>'0');
-						ship_enemy_y_next <= (others=>'0');
+						ship_enemy_x_next <= unsigned(X);
+						ship_enemy_y_next <= unsigned(Y);
 					else
 					
 						case ship_main_region is	
@@ -438,7 +441,6 @@ begin
 	
 	-- Outputs
 	ship_enemy_on <= '1' when (sq_ship_enemy_on = '1') and (rom_bit = '1') else '0';
-	ship_enemy_rgb <= "00000000"; -- color of the enemy ship
 	led <= '1' when (ship_main_hit='1') else '0';
 	
 	
