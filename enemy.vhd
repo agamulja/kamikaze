@@ -15,6 +15,7 @@ entity enemy is
 		bullet_y_t, bullet_y_b: in std_logic_vector(9 downto 0);
 		bullet_x_l, bullet_x_r: in std_logic_vector(9 downto 0);
 		ship_enemy_on: out std_logic;
+		enemy_hit_on: out std_logic;
 		led: out std_logic
 	);
 end enemy;
@@ -442,6 +443,7 @@ begin
 	-- Outputs
 	ship_enemy_on <= '1' when (sq_ship_enemy_on = '1') and (rom_bit = '1') else '0';
 	led <= '1' when (ship_main_hit='1') else '0';
+	enemy_hit_on <= enemy_hit;
 	
 	
 end arch;

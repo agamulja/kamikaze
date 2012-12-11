@@ -70,6 +70,7 @@ architecture arch of kamikaze_graph_st is
 	signal sq_bullet_on, rd_bullet_on: std_logic;
 	signal bullet_rgb: std_logic_vector(7 downto 0);
 	signal hit_by_enemy: std_logic_vector(3 downto 0);
+	signal enemy_hit: std_logic_vector(3 downto 0);
 	
 	-- signal to indicate if scan coord is whithin the ship
 	signal sq_ship_main_on: std_logic;
@@ -90,6 +91,12 @@ architecture arch of kamikaze_graph_st is
 	signal rom_col_bullet: unsigned(2 downto 0);
 	signal rom_data_bullet: std_logic_vector(BULLET_SIZE-1 downto 0);
 	signal rom_bit_bullet: std_logic;
+
+	-- score
+	signal dig0, dig1: std_logic_vector(3 downto 0);
+	signal text_on: std_logic;
+	signal text_rgb: std_logic_vector(2 downto 0);
+	signal ship_main_hit: std_logic;
 		
 begin
 
@@ -487,7 +494,8 @@ begin
 			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
-			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(0), led=>hit_by_enemy(0));
+			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on=>ship_enemy_on(0), led=>hit_by_enemy(0),
+			enemy_hit_on=>enemy_hit(0));
 			
 	-- 2nd enemy instantiation
 	enemy_2: entity work.enemy(arch)
@@ -497,7 +505,8 @@ begin
 			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
-			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(1), led=>hit_by_enemy(1));
+			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(1), led=>hit_by_enemy(1),
+			enemy_hit_on=>enemy_hit(1));
 			
 	-- 3rd enemy instantiation
 	enemy_3: entity work.enemy(arch)
@@ -507,7 +516,8 @@ begin
 			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
-			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(2), led=>hit_by_enemy(2));
+			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(2), led=>hit_by_enemy(2),
+			enemy_hit_on=>enemy_hit(2));
 			
 	-- 4th enemy instantiation
 	enemy_4: entity work.enemy(arch)
@@ -517,13 +527,24 @@ begin
 			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
-			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(3), led=>hit_by_enemy(3));
+			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(3), led=>hit_by_enemy(3),
+			enemy_hit_on=>enemy_hit(3));
 			
 	ship_enemy_rgb <= "00000000"; -- color of the enemy ship
-	led <= hit_by_enemy(0) or hit_by_enemy(1) or hit_by_enemy(2) or hit_by_enemy(3);
+	ship_main_hit <= hit_by_enemy(0) or hit_by_enemy(1) or hit_by_enemy(2) or hit_by_enemy(3);
 	
+	-- instantiate text	
+	text_unit: entity work.game_text
+      port map(clk=>clk,pixel_x=>pixel_x, pixel_y=>pixel_y,
+               dig0=>dig0, dig1=>dig1,text_on=>text_on, text_rgb=>text_rgb);
+			 
+ -- instantiate 2-digit decade counter
+   counter_unit: entity work.m100_counter
+      port map(clk=>clk, reset=>reset, enemy_hit=>enemy_hit, d_clr=>ship_main_hit, dig0=>dig0, dig1=>dig1, refr_tick=>refr_tick);
+
+			   
 	-- output logic
-	process (video_on, ship_main_on, ship_rgb, ship_enemy_on, ship_enemy_rgb, rd_bullet_on, bullet_rgb)
+	process (video_on, ship_main_on, ship_rgb, ship_enemy_on, ship_enemy_rgb, rd_bullet_on, bullet_rgb,text_on,text_rgb)
 	begin
 		if (video_on = '0') then
 			graph_rgb <= (others=>'0'); -- blank
@@ -535,10 +556,14 @@ begin
 			elsif (ship_enemy_on(0)='1') or (ship_enemy_on(1)='1') or (ship_enemy_on(2)='1') or 
 					(ship_enemy_on(3)='1') then
 				graph_rgb <= ship_enemy_rgb;
+			elsif(text_on='1') then
+				graph_rgb <= "00000" & text_rgb;
 			else
 				graph_rgb <= "10011001"; -- bkgnd color
 			end if;
 		end if;
 	end process;
+	
+	led <= ship_main_hit;
 	
 end arch;
