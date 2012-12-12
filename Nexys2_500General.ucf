@@ -44,3 +44,4 @@ NET "vsync" 	LOC = "U3"; # Bank = 2, Pin name = IO_L01P_2/CSO_B, Type = DUAL, Sc
 
 # LEDs
 NET "led"		LOC = "J14";
+NET "led2"		LOC = "J15";
