@@ -48,11 +48,11 @@
 -- The following code must appear in the VHDL architecture header:
 
 ------------- Begin Cut here for COMPONENT Declaration ------ COMP_TAG
-component ship_rom
+component enemy_rom
 	port (
 	clka: in std_logic;
 	addra: in std_logic_vector(7 downto 0);
-	douta: out std_logic_vector(31 downto 0));
+	douta: out std_logic_vector(21 downto 0));
 end component;
 
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
@@ -61,15 +61,15 @@ end component;
 -- body. Substitute your own instance name and net names.
 
 ------------- Begin Cut here for INSTANTIATION Template ----- INST_TAG
-your_instance_name : ship_rom
+your_instance_name : enemy_rom
 		port map (
 			clka => clka,
 			addra => addra,
 			douta => douta);
 -- INST_TAG_END ------ End INSTANTIATION Template ------------
 
--- You must compile the wrapper file ship_rom.vhd when simulating
--- the core, ship_rom. When compiling the wrapper file, be sure to
+-- You must compile the wrapper file enemy_rom.vhd when simulating
+-- the core, enemy_rom. When compiling the wrapper file, be sure to
 -- reference the XilinxCoreLib VHDL simulation library. For detailed
 -- instructions, please refer to the "CORE Generator Help".
 

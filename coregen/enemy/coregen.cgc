@@ -6,21 +6,21 @@
    <spirit:version>1.0</spirit:version>
    <spirit:componentInstances>
       <spirit:componentInstance>
-         <spirit:instanceName>ship_rom</spirit:instanceName>
+         <spirit:instanceName>enemy_rom</spirit:instanceName>
          <spirit:displayName></spirit:displayName>
          <spirit:description></spirit:description>
          <spirit:componentRef spirit:vendor="xilinx.com" spirit:library="ip" spirit:name="blk_mem_gen" spirit:version="4.3" />
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="parameter_port_b_write_rate">0</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_register_portb_output_of_memory_primitives">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_write_depth_a">256</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_write_depth_a">176</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_operating_mode_a">WRITE_FIRST</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_additional_inputs_for_power_estimation">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_operating_mode_b">WRITE_FIRST</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_softecc">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_register_porta_input_of_softecc">false</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_write_width_a">32</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_write_width_b">32</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_write_width_a">22</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_write_width_b">22</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_ecc">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_use_regcea_pin">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_primitive">8kx2</spirit:configurableElementValue>
@@ -48,8 +48,8 @@
             <spirit:configurableElementValue spirit:referenceId="parameter_port_b_clock">0</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_use_error_injection_pins">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_port_a_clock">100</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_read_width_a">32</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_read_width_b">32</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_read_width_a">22</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_read_width_b">22</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_reset_type">SYNC</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_register_porta_output_of_memory_primitives">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_register_portb_output_of_softecc">false</spirit:configurableElementValue>
@@ -58,7 +58,7 @@
             <spirit:configurableElementValue spirit:referenceId="parameter_output_reset_value_b">0</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_register_portb_output_of_memory_core">false</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_load_init_file">true</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="parameter_coe_file">C:\Users\Public\Documents\new ship 2.coe</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="parameter_coe_file">C:\Users\Public\Documents\new enemy.coe</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_error_injection_type">Single_Bit_Error_Injection</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_collision_warnings">ALL</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="parameter_reset_priority_a">CE</spirit:configurableElementValue>
@@ -99,19 +99,19 @@
                <xilinx:fileSet>
                   <xilinx:name>customization_generator</xilinx:name>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.mif</xilinx:name>
+                     <xilinx:name>./enemy_rom.mif</xilinx:name>
                      <xilinx:userFileType>mif</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:43:24 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x198C9768</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:52:00 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x82501193</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
                   <xilinx:name>ip_xco_generator</xilinx:name>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.xco</xilinx:name>
+                     <xilinx:name>./enemy_rom.xco</xilinx:name>
                      <xilinx:userFileType>xco</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:43:25 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0xB533C492</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:52:01 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xD454985E</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -119,44 +119,44 @@
                   <xilinx:file>
                      <xilinx:name>./blk_mem_gen_ds512.pdf</xilinx:name>
                      <xilinx:userFileType>pdf</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:12 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Tue Dec 11 23:52:42 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0xFF542E99</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
                      <xilinx:name>./blk_mem_gen_readme.txt</xilinx:name>
                      <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:12 GMT 2012</xilinx:timeStamp>
+                     <xilinx:timeStamp>Tue Dec 11 23:52:42 GMT 2012</xilinx:timeStamp>
                      <xilinx:checkSum>0xED96AB8B</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.asy</xilinx:name>
+                     <xilinx:name>./enemy_rom.asy</xilinx:name>
                      <xilinx:userFileType>asy</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:43:28 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x012D2C50</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:52:03 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xAEAD3522</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.mif</xilinx:name>
+                     <xilinx:name>./enemy_rom.mif</xilinx:name>
                      <xilinx:userFileType>mif</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:43:28 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x198C9768</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:52:03 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x82501193</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.ngc</xilinx:name>
+                     <xilinx:name>./enemy_rom.ngc</xilinx:name>
                      <xilinx:userFileType>ngc</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:19 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x1CED76F7</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:52:54 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xE9A9F4CB</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.vhd</xilinx:name>
+                     <xilinx:name>./enemy_rom.vhd</xilinx:name>
                      <xilinx:userFileType>vhdl</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:12 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x1F74BD89</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:52:43 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x49FEDC7D</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.vho</xilinx:name>
+                     <xilinx:name>./enemy_rom.vho</xilinx:name>
                      <xilinx:userFileType>vho</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:12 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x97335DF6</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:52:43 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x62ADD6EB</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -165,20 +165,20 @@
                <xilinx:fileSet>
                   <xilinx:name>xco_generator</xilinx:name>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.xco</xilinx:name>
+                     <xilinx:name>./enemy_rom.xco</xilinx:name>
                      <xilinx:userFileType>xco</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:25 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x69A712C2</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:53:00 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x32B82D5E</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
                   <xilinx:name>xmdf_generator</xilinx:name>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom_xmdf.tcl</xilinx:name>
+                     <xilinx:name>./enemy_rom_xmdf.tcl</xilinx:name>
                      <xilinx:userFileType>tclXmdf</xilinx:userFileType>
                      <xilinx:userFileType>tcl</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:25 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x2877194D</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:53:00 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x58C31CC5</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -187,22 +187,22 @@
                      <xilinx:name>./_xmsgs/pn_parser.xmsgs</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>unknown</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:29 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x722D909E</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:53:03 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x9B262AF3</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.gise</xilinx:name>
+                     <xilinx:name>./enemy_rom.gise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>gise</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:29 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x586C006D</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:53:03 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0x415B0F11</xilinx:checkSum>
                   </xilinx:file>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom.xise</xilinx:name>
+                     <xilinx:name>./enemy_rom.xise</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>xise</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:29 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x685525C3</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:53:03 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xE4CDFBA6</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>
@@ -211,12 +211,12 @@
                <xilinx:fileSet>
                   <xilinx:name>flist_generator</xilinx:name>
                   <xilinx:file>
-                     <xilinx:name>./ship_rom_flist.txt</xilinx:name>
+                     <xilinx:name>./enemy_rom_flist.txt</xilinx:name>
                      <xilinx:userFileType>ignore</xilinx:userFileType>
                      <xilinx:userFileType>txtFlist</xilinx:userFileType>
                      <xilinx:userFileType>txt</xilinx:userFileType>
-                     <xilinx:timeStamp>Tue Dec 11 23:44:30 GMT 2012</xilinx:timeStamp>
-                     <xilinx:checkSum>0x1D9560B6</xilinx:checkSum>
+                     <xilinx:timeStamp>Tue Dec 11 23:53:03 GMT 2012</xilinx:timeStamp>
+                     <xilinx:checkSum>0xB4C2A4A3</xilinx:checkSum>
                   </xilinx:file>
                </xilinx:fileSet>
                <xilinx:fileSet>

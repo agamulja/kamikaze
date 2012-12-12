@@ -1,0 +1,14 @@
+# Output products list for <enemy_rom>
+_xmsgs\pn_parser.xmsgs
+blk_mem_gen_ds512.pdf
+blk_mem_gen_readme.txt
+enemy_rom.asy
+enemy_rom.gise
+enemy_rom.mif
+enemy_rom.ngc
+enemy_rom.vhd
+enemy_rom.vho
+enemy_rom.xco
+enemy_rom.xise
+enemy_rom_flist.txt
+enemy_rom_xmdf.tcl

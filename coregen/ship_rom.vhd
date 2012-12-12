@@ -63,7 +63,7 @@ ENTITY ship_rom IS
 	port (
 	clka: in std_logic;
 	addra: in std_logic_vector(7 downto 0);
-	douta: out std_logic_vector(21 downto 0));
+	douta: out std_logic_vector(31 downto 0));
 END ship_rom;
 
 ARCHITECTURE ship_rom_a OF ship_rom IS
@@ -72,7 +72,7 @@ component wrapped_ship_rom
 	port (
 	clka: in std_logic;
 	addra: in std_logic_vector(7 downto 0);
-	douta: out std_logic_vector(21 downto 0));
+	douta: out std_logic_vector(31 downto 0));
 end component;
 
 -- Configuration specification 
@@ -86,10 +86,10 @@ end component;
 			c_has_injecterr => 0,
 			c_rst_type => "SYNC",
 			c_prim_type => 1,
-			c_read_width_b => 22,
+			c_read_width_b => 32,
 			c_initb_val => "0",
 			c_family => "spartan3",
-			c_read_width_a => 22,
+			c_read_width_a => 32,
 			c_disable_warn_bhv_coll => 0,
 			c_use_softecc => 0,
 			c_write_mode_b => "WRITE_FIRST",
@@ -101,8 +101,8 @@ end component;
 			c_has_mem_output_regs_a => 0,
 			c_load_init_file => 1,
 			c_xdevicefamily => "spartan3e",
-			c_write_depth_b => 176,
-			c_write_depth_a => 176,
+			c_write_depth_b => 256,
+			c_write_depth_a => 256,
 			c_has_rstb => 0,
 			c_has_rsta => 0,
 			c_has_mux_output_regs_b => 0,
@@ -115,10 +115,10 @@ end component;
 			c_use_ecc => 0,
 			c_algorithm => 1,
 			c_disable_warn_bhv_range => 0,
-			c_write_width_b => 22,
-			c_write_width_a => 22,
-			c_read_depth_b => 176,
-			c_read_depth_a => 176,
+			c_write_width_b => 32,
+			c_write_width_a => 32,
+			c_read_depth_b => 256,
+			c_read_depth_a => 256,
 			c_byte_size => 9,
 			c_sim_collision_check => "ALL",
 			c_common_clk => 0,
