@@ -9,7 +9,7 @@ entity m100_counter is
 		enemy_hit: in std_logic_vector(3 downto 0);
       d_clr: in std_logic;
       dig0,dig1: out std_logic_vector (3 downto 0)
-   );
+	);
 end m100_counter;
 
 architecture arch of m100_counter is
@@ -247,5 +247,7 @@ begin
 	-- outputs
    dig0 <= std_logic_vector(dig0_reg);
    dig1 <= std_logic_vector(dig1_reg);
+	
+	-- led2 <= '1' when (dig0_reg=5) else '0';
 	
 end arch;

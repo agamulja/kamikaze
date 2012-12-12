@@ -6,10 +6,10 @@ entity kamikaze_graph_st is
 	port(
 		clk, reset: in std_logic;
 		btn: in std_logic_vector(3 downto 0);
-		video_on: in std_logic;
+		video_on, reset_all, over: in std_logic;
 		pixel_x, pixel_y: in std_logic_vector(9 downto 0);
 		graph_rgb: out std_logic_vector(7 downto 0);
-		led: out std_logic
+		led, led2: out std_logic
 	);
 end kamikaze_graph_st;
 
@@ -114,8 +114,8 @@ begin
 			ship_main_y_reg <= to_unsigned(MAX_Y/2, 10);
 			ship_main_x_reg <= to_unsigned(MAX_X/2, 10);
 			ship_main_orient_reg <= (others=>'0');
-			bullet_y_reg <= (others=>'0');
-			bullet_x_reg <= (others=>'0');
+			bullet_y_reg <= to_unsigned(MAX_Y/2,10);
+			bullet_x_reg <= to_unsigned(MAX_X/2,10);
 			bullet_at_edge_reg <= '0';
 			bullet_direction_reg <= (others=>'0');
 			mod16_ref_reg <= (others=>'0');
@@ -197,7 +197,7 @@ begin
 	
 	-- process ship movement request
 	process(ship_main_y_reg, ship_main_x_reg, ship_main_orient_reg, ship_main_y_t, ship_main_y_b,
-			  ship_main_x_r, ship_main_x_l, refr_tick, btn, mod16_ref_reg, mod128_ref_reg)
+			  ship_main_x_r, ship_main_x_l, refr_tick, reset_all, btn, mod16_ref_reg, mod128_ref_reg)
 	begin
 		-- no move
 		ship_main_y_next <= ship_main_y_reg;
@@ -206,7 +206,13 @@ begin
 		mod16_ref_next <= mod16_ref_reg;
 		mod128_ref_next <= mod128_ref_reg;
 		
-		if (refr_tick = '1') then
+		if (reset_all = '1') then
+			ship_main_y_next <= to_unsigned(MAX_Y/2, 10);
+			ship_main_x_next <= to_unsigned(MAX_X/2, 10);
+			ship_main_orient_next <= (others=>'0');
+			mod16_ref_next <= (others=>'0');
+			mod128_ref_next <= (others=>'0');
+		elsif (refr_tick = '1') then
 		
 			mod16_ref_next <= mod16_ref_reg + 1;
 			mod128_ref_next <= mod128_ref_reg + 1;
@@ -330,7 +336,7 @@ begin
 	bullet_rgb <= "00011100";
 	
 	-- process shooting
-	process(refr_tick, bullet_x_reg, bullet_y_reg, bullet_y_t, bullet_y_b, bullet_x_l,
+	process(refr_tick, reset_all, bullet_x_reg, bullet_y_reg, bullet_y_t, bullet_y_b, bullet_x_l,
 			  bullet_x_r, bullet_at_edge_reg, bullet_direction_reg, ship_main_orient_reg, 
 			  ship_main_y_t, ship_main_y_b, ship_main_x_l, ship_main_x_r, mod128_ref_reg)
 	begin
@@ -339,8 +345,13 @@ begin
 		bullet_x_next <= bullet_x_reg;
 		bullet_at_edge_next <= bullet_at_edge_reg;
 		bullet_direction_next <= bullet_direction_reg;
-				
-		if (bullet_at_edge_reg='0') then
+		
+		if (reset_all='1') then
+			bullet_y_next <= to_unsigned(MAX_Y/2,10);
+			bullet_x_next <= to_unsigned(MAX_X/2,10);
+			bullet_at_edge_next <= '0';
+			bullet_direction_next <= (others=>'0');
+		elsif (bullet_at_edge_reg='0') then
 			-- keep on moving
 			case bullet_direction_reg is
 				when "000" =>
@@ -490,7 +501,7 @@ begin
 	enemy_1: entity work.enemy(arch)
 		generic map(X=>ENEMY1_X_POS, Y=>ENEMY1_Y_POS)
 		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
-			pixel_y=>pixel_y, refr_tick=>refr_tick, ship_main_y_t=>std_logic_vector(ship_main_y_t),
+			pixel_y=>pixel_y, refr_tick=>refr_tick, reset_all=>reset_all, ship_main_y_t=>std_logic_vector(ship_main_y_t),
 			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
@@ -501,7 +512,7 @@ begin
 	enemy_2: entity work.enemy(arch)
 		generic map(X=>ENEMY2_X_POS, Y=>ENEMY2_Y_POS)
 		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
-			pixel_y=>pixel_y, refr_tick=>refr_tick, ship_main_y_t=>std_logic_vector(ship_main_y_t),
+			pixel_y=>pixel_y, refr_tick=>refr_tick, reset_all=>reset_all, ship_main_y_t=>std_logic_vector(ship_main_y_t),
 			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
@@ -512,7 +523,7 @@ begin
 	enemy_3: entity work.enemy(arch)
 		generic map(X=>ENEMY3_X_POS, Y=>ENEMY3_Y_POS)
 		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
-			pixel_y=>pixel_y, refr_tick=>refr_tick, ship_main_y_t=>std_logic_vector(ship_main_y_t),
+			pixel_y=>pixel_y, refr_tick=>refr_tick, reset_all=>reset_all, ship_main_y_t=>std_logic_vector(ship_main_y_t),
 			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
@@ -523,7 +534,7 @@ begin
 	enemy_4: entity work.enemy(arch)
 		generic map(X=>ENEMY4_X_POS, Y=>ENEMY4_Y_POS)
 		port map(clk=>clk, reset=>reset, pixel_x=>pixel_x,
-			pixel_y=>pixel_y, refr_tick=>refr_tick, ship_main_y_t=>std_logic_vector(ship_main_y_t),
+			pixel_y=>pixel_y, refr_tick=>refr_tick, reset_all=>reset_all, ship_main_y_t=>std_logic_vector(ship_main_y_t),
 			ship_main_y_b=>std_logic_vector(ship_main_y_b), ship_main_x_l=>std_logic_vector(ship_main_x_l), 
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
@@ -544,10 +555,12 @@ begin
 
 			   
 	-- output logic
-	process (video_on, ship_main_on, ship_rgb, ship_enemy_on, ship_enemy_rgb, rd_bullet_on, bullet_rgb,text_on,text_rgb)
+	process (video_on, ship_main_on, ship_rgb, ship_enemy_on, ship_enemy_rgb, rd_bullet_on, bullet_rgb,text_on,text_rgb, over)
 	begin
 		if (video_on = '0') then
 			graph_rgb <= (others=>'0'); -- blank
+		elsif (over='1') then
+			graph_rgb <= "10011001";
 		else -- priority encoding implicit here
 			if (ship_main_on='1') then
 				graph_rgb <= ship_rgb;
@@ -565,5 +578,6 @@ begin
 	end process;
 	
 	led <= ship_main_hit;
+	led2 <= enemy_hit(0) or enemy_hit(1) or enemy_hit(2) or enemy_hit(3);
 	
 end arch;

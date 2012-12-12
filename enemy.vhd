@@ -8,7 +8,7 @@ entity enemy is
 		Y: std_logic_vector(9 downto 0) := (others=>'0')
 	);
 	port(
-		clk, reset, refr_tick: in std_logic;
+		clk, reset, refr_tick, reset_all: in std_logic;
 		pixel_x, pixel_y: in std_logic_vector(9 downto 0);
 		ship_main_y_t, ship_main_y_b: in std_logic_vector(9 downto 0);
 		ship_main_x_l, ship_main_x_r: in std_logic_vector(9 downto 0);
@@ -67,7 +67,8 @@ architecture arch of enemy is
 	signal pix_x_enemy, pix_y_enemy: unsigned(9 downto 0);
 	signal region_x, region_y: std_logic;
 	signal ship_main_region: std_logic_vector(1 downto 0);
-	signal ship_main_hit, enemy_hit: std_logic;
+	signal ship_main_hit: std_logic; 
+	signal enemy_hit_reg, enemy_hit_next: std_logic;
 
 begin
 
@@ -82,6 +83,7 @@ begin
 			ship_enemy_orient_reg <= ("100");
 			min_dist_reg <= (others=>'0');
 			dist_reg <= (others=>'0');
+			enemy_hit_reg <= '0';
 			state_reg <= idle;
 		elsif (clk'event and clk='1') then
 			ship_enemy_y_reg <= ship_enemy_y_next;
@@ -89,6 +91,7 @@ begin
 			ship_enemy_orient_reg <= ship_enemy_orient_next;
 			min_dist_reg <= min_dist_next;
 			dist_reg <= dist_next;
+			enemy_hit_reg <= enemy_hit_next;
 			state_reg <= state_next;
 		end if;
 	end process;
@@ -175,21 +178,25 @@ begin
 	
 	-- signals enemy hit
 	process(ship_enemy_y_b, ship_enemy_y_t, ship_enemy_x_l, ship_enemy_x_r,
-			  bullet_y_b, bullet_y_t, bullet_x_l, bullet_x_r)
+			  bullet_y_b, bullet_y_t, bullet_x_l, bullet_x_r, enemy_hit_reg, reset_all)
 	begin
-		enemy_hit <= '0';
-		if (ship_enemy_y_b >= unsigned(bullet_y_t)) and (ship_enemy_y_t <= unsigned(bullet_y_b)) then
-			if (ship_enemy_x_l <= unsigned(bullet_x_r)) and (ship_enemy_x_r >= unsigned(bullet_x_l)) then
-				enemy_hit <= '1';
+		enemy_hit_next <= '0';
+		if (reset_all='1') then
+			enemy_hit_next <= '1';
+		else
+			if (ship_enemy_y_b >= unsigned(bullet_y_t)) and (ship_enemy_y_t <= unsigned(bullet_y_b)) then
+				if (ship_enemy_x_l <= unsigned(bullet_x_r)) and (ship_enemy_x_r >= unsigned(bullet_x_l)) then
+					enemy_hit_next <= '1';
+				end if;
 			end if;
 		end if;
 	end process;
 	
 	
 	-- Process the tracking algorithm using FSMD
-	process(state_reg, start, ship_main_region, ship_enemy_x_reg, ship_enemy_y_reg,
+	process(state_reg, start, reset_all, ship_main_region, ship_enemy_x_reg, ship_enemy_y_reg,
 			  ship_enemy_orient_reg, min_dist_reg, dist_reg, min_dist_next, dist_next, 
-			  pix_x_main, pix_x_enemy,	pix_y_main, pix_y_enemy, ship_main_hit, enemy_hit)
+			  pix_x_main, pix_x_enemy,	pix_y_main, pix_y_enemy, ship_main_hit, enemy_hit_reg)
 			  
 	begin
 	
@@ -204,10 +211,17 @@ begin
 		case state_reg is
 			when idle =>
 				ready <= '1';
-				if (start='1') then
+				if (reset_all='1') then
+					ship_enemy_x_next <= unsigned(X);
+					ship_enemy_y_next <= unsigned(Y);
+					ship_enemy_orient_next <= (others=>'0');
+					min_dist_next <= (others=>'0');
+					dist_next <= (others=>'0');
+					state_next <= idle;
+				elsif (start='1') then
 					if (ship_main_hit='1') then
 						state_next <= idle;
-					elsif (enemy_hit='1') then
+					elsif (enemy_hit_reg='1') then
 						state_next <= idle;
 						ship_enemy_x_next <= unsigned(X);
 						ship_enemy_y_next <= unsigned(Y);
@@ -443,7 +457,7 @@ begin
 	-- Outputs
 	ship_enemy_on <= '1' when (sq_ship_enemy_on = '1') and (rom_bit = '1') else '0';
 	led <= '1' when (ship_main_hit='1') else '0';
-	enemy_hit_on <= enemy_hit;
+	enemy_hit_on <= enemy_hit_reg;
 	
 	
 end arch;
