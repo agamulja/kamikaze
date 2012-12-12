@@ -6,8 +6,9 @@ entity kamikaze_graph_st is
 	port(
 		clk, reset: in std_logic;
 		btn: in std_logic_vector(3 downto 0);
-		video_on, reset_all, over: in std_logic;
+		video_on, reset_all: in std_logic;
 		pixel_x, pixel_y: in std_logic_vector(9 downto 0);
+		welcome_on, gameover_on: in std_logic;
 		graph_rgb: out std_logic_vector(7 downto 0);
 		led, led2: out std_logic
 	);
@@ -20,7 +21,7 @@ architecture arch of kamikaze_graph_st is
 	constant MAX_Y: integer := 480;			-- number of vertical pixels
 	constant SHIP_V: integer := 1;			-- ship moving velocity
 	constant BULLET_V: integer := 5;			-- bullet moving velocity
-	constant SHIP_SIZE: integer := 22;		-- size of ship square box
+	constant SHIP_SIZE: integer := 32;		-- size of ship square box
 	constant BULLET_SIZE: integer := 8;		-- size of bullet box
 	constant ROM_ADDR_SIZE: integer := 8;	--	size of rom_addr (bits)
 	constant ROM_COL_SIZE: integer := 5;	-- size of rom_col signal used to access every column
@@ -94,7 +95,7 @@ architecture arch of kamikaze_graph_st is
 
 	-- score
 	signal dig0, dig1: std_logic_vector(3 downto 0);
-	signal text_on: std_logic;
+	signal text_on: std_logic_vector(3 downto 0);
 	signal text_rgb: std_logic_vector(2 downto 0);
 	signal ship_main_hit: std_logic;
 		
@@ -546,7 +547,7 @@ begin
 	
 	-- instantiate text	
 	text_unit: entity work.game_text
-      port map(clk=>clk,pixel_x=>pixel_x, pixel_y=>pixel_y,
+      port map(clk=>clk,reset=>reset,pixel_x=>pixel_x, pixel_y=>pixel_y,
                dig0=>dig0, dig1=>dig1,text_on=>text_on, text_rgb=>text_rgb);
 			 
  -- instantiate 2-digit decade counter
@@ -555,12 +556,11 @@ begin
 
 			   
 	-- output logic
-	process (video_on, ship_main_on, ship_rgb, ship_enemy_on, ship_enemy_rgb, rd_bullet_on, bullet_rgb,text_on,text_rgb, over)
+	process (video_on, ship_main_on, ship_rgb, ship_enemy_on, ship_enemy_rgb, 
+				rd_bullet_on, bullet_rgb,text_on,text_rgb, gameover_on, welcome_on)
 	begin
 		if (video_on = '0') then
 			graph_rgb <= (others=>'0'); -- blank
-		elsif (over='1') then
-			graph_rgb <= "10011001";
 		else -- priority encoding implicit here
 			if (ship_main_on='1') then
 				graph_rgb <= ship_rgb;
@@ -569,7 +569,13 @@ begin
 			elsif (ship_enemy_on(0)='1') or (ship_enemy_on(1)='1') or (ship_enemy_on(2)='1') or 
 					(ship_enemy_on(3)='1') then
 				graph_rgb <= ship_enemy_rgb;
-			elsif(text_on='1') then
+			elsif(text_on(3)='1') and (welcome_on /= '1') and (gameover_on /='1') then
+				graph_rgb <= "00000" & text_rgb;
+			elsif(text_on(2)='1') and (welcome_on = '1') then
+				graph_rgb <= "00000" & text_rgb;
+			elsif(text_on(1)='1') and (welcome_on = '1') then
+				graph_rgb <= "00000" & text_rgb;
+			elsif(text_on(0)='1') and (gameover_on='1') then
 				graph_rgb <= "00000" & text_rgb;
 			else
 				graph_rgb <= "10011001"; -- bkgnd color

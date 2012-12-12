@@ -24,8 +24,7 @@ architecture arch of kamikaze_top_st is
 	signal reset_all: std_logic;
 	signal timer_tick, timer_start, timer_up: std_logic;
 	signal ship_main_hit: std_logic;
-	signal over: std_logic;
-	
+	signal welcome_on,gameover_on: std_logic;
 begin
 
 -- registers
@@ -62,8 +61,9 @@ begin
 -- instantiate pixel generation circuit
 	kamikaze_grf_st_unit: entity work.kamikaze_graph_st(arch)
 		port map(clk=>clk, reset=>reset, reset_all=>reset_all, btn=>btn, 
-			video_on=>video_on, over=>over, pixel_x=>pixel_x, pixel_y=>pixel_y, 
-			graph_rgb=>rgb_next, led=>ship_main_hit, led2=>led2);
+			video_on=>video_on, pixel_x=>pixel_x, pixel_y=>pixel_y, 
+			graph_rgb=>rgb_next, led=>ship_main_hit, led2=>led2, welcome_on=>welcome_on,
+			gameover_on=> gameover_on);
 	
 	
 -- fsmd next-state logic
@@ -74,12 +74,12 @@ begin
       state_next <= state_reg;
       -- enemy_next <= enemy_reg;
 		reset_all <= '0';
-		over <= '0';
-		
+		welcome_on <= '0';
+		gameover_on <= '0';
       case state_reg is
          when welcome =>
-            if (btn /= "0000") then -- button pressed
-               state_next <= play;
+            welcome_on <= '1';
+				if (btn /= "0000") then -- button pressed
                -- enemy_next <= enemy_reg + 1;
 					state_next <= get_ready;
             end if;
@@ -96,7 +96,7 @@ begin
          
          when game_over =>
             -- wait for 2 sec to display game over
-				over <= '1';
+				gameover_on <= '1';
             if timer_up='1' then
                 state_next <= welcome;
             end if;

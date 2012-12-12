@@ -108,7 +108,7 @@ begin
 									else '0';
 
 	-- map scan coord to ROM addr/col
-	ship_enemy_rom : entity work.ship_rom
+	ship_enemy_rom : entity work.enemy_rom
 		port map (
 			clka => clk,
 			addra => rom_addr,
