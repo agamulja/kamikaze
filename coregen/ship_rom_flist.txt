@@ -6,6 +6,9 @@ ship_rom.asy
 ship_rom.gise
 ship_rom.mif
 ship_rom.ngc
+ship_rom.sym
+ship_rom.v
+ship_rom.veo
 ship_rom.vhd
 ship_rom.vho
 ship_rom.xco

@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 12.4
-# Date: Thu Dec 13 03:20:19 2012
+# Date: Wed Dec 12 21:18:04 2012
 #
 ##############################################################
 #
@@ -39,9 +39,9 @@ CSET additional_inputs_for_power_estimation=false
 CSET algorithm=Minimum_Area
 CSET assume_synchronous_clk=false
 CSET byte_size=9
-CSET coe_file="C:\Users\Andrew Gamulja\Documents\VHDL\kamikaze\ship_main.coe"
+CSET coe_file="C:\Users\Andrew Gamulja\Documents\VHDL\kamikaze\japan_ship.coe"
 CSET collision_warnings=ALL
-CSET component_name=ship_rom
+CSET component_name=enemy_rom
 CSET disable_collision_warnings=false
 CSET disable_out_of_range_warnings=false
 CSET ecc=false
@@ -85,9 +85,9 @@ CSET use_regcea_pin=false
 CSET use_regceb_pin=false
 CSET use_rsta_pin=false
 CSET use_rstb_pin=false
-CSET write_depth_a=23328
+CSET write_depth_a=3872
 CSET write_width_a=8
 CSET write_width_b=8
 # END Parameters
 GENERATE
-# CRC: 218dbbd2
+# CRC: 2150ba95

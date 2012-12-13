@@ -1,0 +1,17 @@
+# Output products list for <background_rom>
+_xmsgs\pn_parser.xmsgs
+background_rom.asy
+background_rom.gise
+background_rom.mif
+background_rom.ngc
+background_rom.sym
+background_rom.v
+background_rom.veo
+background_rom.vhd
+background_rom.vho
+background_rom.xco
+background_rom.xise
+background_rom_flist.txt
+background_rom_xmdf.tcl
+blk_mem_gen_ds512.pdf
+blk_mem_gen_readme.txt
