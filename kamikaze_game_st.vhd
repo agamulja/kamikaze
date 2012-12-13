@@ -21,9 +21,9 @@ architecture arch of kamikaze_graph_st is
 	constant MAX_Y: integer := 480;			-- number of vertical pixels
 	constant SHIP_V: integer := 1;			-- ship moving velocity
 	constant BULLET_V: integer := 5;			-- bullet moving velocity
-	constant SHIP_SIZE: integer := 32;		-- size of ship square box
+	constant SHIP_SIZE: integer := 53;		-- size of ship square box
 	constant BULLET_SIZE: integer := 8;		-- size of bullet box
-	constant ROM_ADDR_SIZE: integer := 8;	--	size of rom_addr (bits)
+	constant ROM_ADDR_SIZE: integer := 15;	--	size of rom_addr (bits)
 	constant ROM_COL_SIZE: integer := 5;	-- size of rom_col signal used to access every column
 	constant ENEMY1_X_POS, ENEMY1_Y_POS: std_logic_vector(9 downto 0) := (others=>'0');
 	constant ENEMY2_X_POS: std_logic_vector(9 downto 0) := "1001101001";
@@ -32,6 +32,10 @@ architecture arch of kamikaze_graph_st is
 	constant ENEMY3_Y_POS: std_logic_vector(9 downto 0) := "0111001001";
 	constant ENEMY4_X_POS: std_logic_vector(9 downto 0) := "1001101001";
 	constant ENEMY4_Y_POS: std_logic_vector(9 downto 0) := "0111001001";
+	constant ROM_MULTI: integer := 2809;
+--	constant BG_SIZE_X: integer := 160;
+--	constant BG_SIZE_Y: integer := 120;
+--	constant ROM_BG_ADDR_SIZE: integer := 15;
 	
 	-- bullet image rom
 	type rom_type is array(0 to BULLET_SIZE-1) of std_logic_vector(0 to BULLET_SIZE-1);
@@ -76,22 +80,26 @@ architecture arch of kamikaze_graph_st is
 	-- signal to indicate if scan coord is whithin the ship
 	signal sq_ship_main_on: std_logic;
 	signal ship_main_on: std_logic;
-	signal ship_rgb: std_logic_vector(7 downto 0);
+	-- signal ship_rgb: std_logic_vector(7 downto 0);
 	signal ship_enemy_on: std_logic_vector(3 downto 0);
-	signal ship_enemy_rgb: std_logic_vector(7 downto 0);
-
+	signal enemy1_rgb, enemy2_rgb, enemy3_rgb, enemy4_rgb: std_logic_vector(7 downto 0);
+	signal level_up: std_logic_vector(3 downto 0);
 	-- signal to be used for main ship ROM
 	signal rom_addr: std_logic_vector(ROM_ADDR_SIZE-1 downto 0);	
 	signal rom_addr_num: unsigned(ROM_ADDR_SIZE-1 downto 0);
-	signal rom_col: unsigned(ROM_COL_SIZE-1 downto 0);
-	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
-	signal rom_bit: std_logic;
+	signal rom_data: std_logic_vector(7 downto 0);
+	signal rom_byte: std_logic;
 	
 	-- signal to be used for bullet ROM
 	signal rom_addr_bullet: unsigned(2 downto 0);	
 	signal rom_col_bullet: unsigned(2 downto 0);
 	signal rom_data_bullet: std_logic_vector(BULLET_SIZE-1 downto 0);
 	signal rom_bit_bullet: std_logic;
+	
+--	-- signal to be used for background image
+--	signal rom_bg_addr: std_logic_vector(ROM_BG_ADDR_SIZE-1 downto 0);
+--	signal rom_bg_data: std_logic_vector(7 downto 0);
+--	signal bg_rgb: std_logic_vector(7 downto 0);
 
 	-- score
 	signal dig0, dig1: std_logic_vector(3 downto 0);
@@ -133,6 +141,31 @@ begin
 			mod128_ref_reg <= mod128_ref_next;
 		end if;
 	end process;
+	
+--	-- instantiate background image
+--	ocean_rom : entity work.background_rom
+--		port map (
+--			clka => clk,
+--			addra => rom_bg_addr,
+--			douta => rom_bg_data);
+--			
+--	-- BG_ROM access
+--	process(pixel_tick, mod4_cnt_reg)
+--	begin
+--		mod4_cnt_next <= mod4_cnt_reg;
+--		if (pixel_tick='1') then
+--			mod4_cnt_next <= mod4_cnt_reg + 1; 
+--		
+--	
+--	end process;
+--	
+--	-- stretch background image
+--	process(pix_x, pix_y, )
+--	begin
+--		
+--		
+--		
+--	end process;
 		
 	-- Current position of the main_ship box and its bullets
 	ship_main_y_t <= ship_main_y_reg;
@@ -157,44 +190,42 @@ begin
 			douta => rom_data);
 		
 	-- select row from ROM
-	process (ship_main_orient_reg, sq_ship_main_on, pix_y, ship_main_y_t)
+	process (ship_main_orient_reg, sq_ship_main_on, pix_y, pix_x, ship_main_y_t, ship_main_x_l)
 	begin
 		rom_addr_num <= (others=>'0');
 		if sq_ship_main_on = '1' then
 			case ship_main_orient_reg is
 				when "000" =>
-					rom_addr_num <= resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(SHIP_SIZE*(pix_y - ship_main_y_t) + pix_x - ship_main_x_l, ROM_ADDR_SIZE);
 				
 				when "001" =>
-					rom_addr_num <= SHIP_SIZE + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(ROM_MULTI + SHIP_SIZE*(pix_y - ship_main_y_t) + pix_x - ship_main_x_l, ROM_ADDR_SIZE);
 					
 				when "010" =>
-					rom_addr_num <= SHIP_SIZE*2 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(2*ROM_MULTI + SHIP_SIZE*(pix_y - ship_main_y_t) + pix_x - ship_main_x_l, ROM_ADDR_SIZE);
 					
 				when "011" =>
-					rom_addr_num <= SHIP_SIZE*3 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(3*ROM_MULTI + SHIP_SIZE*(pix_y - ship_main_y_t) + pix_x - ship_main_x_l, ROM_ADDR_SIZE);
 					
 				when "100" =>
-					rom_addr_num <= SHIP_SIZE*4 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(4*ROM_MULTI + SHIP_SIZE*(pix_y - ship_main_y_t) + pix_x - ship_main_x_l, ROM_ADDR_SIZE);
 				
 				when "101" =>
-					rom_addr_num <= SHIP_SIZE*5 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(5*ROM_MULTI + SHIP_SIZE*(pix_y - ship_main_y_t) + pix_x - ship_main_x_l, ROM_ADDR_SIZE);
 				
 				when "110" =>
-					rom_addr_num <= SHIP_SIZE*6 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(6*ROM_MULTI + SHIP_SIZE*(pix_y - ship_main_y_t) + pix_x - ship_main_x_l, ROM_ADDR_SIZE);
 				
 				when others =>
-					rom_addr_num <= SHIP_SIZE*7 + resize(pix_y-ship_main_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(7*ROM_MULTI + SHIP_SIZE*(pix_y - ship_main_y_t) + pix_x - ship_main_x_l, ROM_ADDR_SIZE);
 			end case;
 		end if;
 	end process;
 
 	rom_addr <= std_logic_vector(rom_addr_num);
-	rom_col <= resize(pix_x-ship_main_x_l, ROM_COL_SIZE) when sq_ship_main_on = '1' else (others=>'0');
-	rom_bit <= rom_data(to_integer(SHIP_SIZE-1-rom_col));
-	ship_main_on <= '1' when (sq_ship_main_on = '1') and (rom_bit = '1') else '0';
-	ship_rgb <= "00011100"; -- color of the ship
-	
+	rom_byte <= '1' when rom_data /= x"00" else '0';
+	ship_main_on <= '1' when (sq_ship_main_on = '1') and (rom_byte = '1') else '0';
+		
 	
 	-- process ship movement request
 	process(ship_main_y_reg, ship_main_x_reg, ship_main_orient_reg, ship_main_y_t, ship_main_y_b,
@@ -334,7 +365,7 @@ begin
 	rom_data_bullet <= BULLET_ROM(to_integer(rom_addr_bullet));
 	rom_bit_bullet <= rom_data_bullet(to_integer(rom_col_bullet));
 	rd_bullet_on <= '1' when (sq_bullet_on = '1') and (rom_bit_bullet = '1') else '0';
-	bullet_rgb <= "00011100";
+	bullet_rgb <= x"00";
 	
 	-- process shooting
 	process(refr_tick, reset_all, bullet_x_reg, bullet_y_reg, bullet_y_t, bullet_y_b, bullet_x_l,
@@ -439,7 +470,7 @@ begin
 					when "000" =>
 						bullet_direction_next <= ship_main_orient_reg;
 						bullet_y_next <= ship_main_y_t - BULLET_SIZE;
-						bullet_x_next <= ship_main_x_l + 7;
+						bullet_x_next <= ship_main_x_l + 26;
 						
 						bullet_at_edge_next <= '0';
 					
@@ -452,7 +483,7 @@ begin
 						
 					when "010" =>
 						bullet_direction_next <= ship_main_orient_reg;
-						bullet_y_next <= ship_main_y_t + 7;
+						bullet_y_next <= ship_main_y_t + 26;
 						bullet_x_next <= ship_main_x_r + 1;
 						
 						bullet_at_edge_next <= '0';
@@ -467,7 +498,7 @@ begin
 					when "100" =>
 						bullet_direction_next <= ship_main_orient_reg;
 						bullet_y_next <= ship_main_y_b + 1;
-						bullet_x_next <= ship_main_x_l + 7;
+						bullet_x_next <= ship_main_x_l + 26;
 						
 						bullet_at_edge_next <= '0';
 					
@@ -480,7 +511,7 @@ begin
 					
 					when "110" =>
 						bullet_direction_next <= ship_main_orient_reg;
-						bullet_y_next <= ship_main_y_t + 7;
+						bullet_y_next <= ship_main_y_t + 26;
 						bullet_x_next <= ship_main_x_l - BULLET_SIZE;
 						
 						bullet_at_edge_next <= '0';
@@ -497,6 +528,10 @@ begin
 		end if;
 	end process;
 	
+	level_up(0)<='1';
+	level_up(1)<='1';
+	level_up(2)<='1' when dig1 >= "0001" else '0';
+	level_up(3)<='1' when dig1 >= "0001" else '0';
 	
 	-- 1st enemy instantiation
 	enemy_1: entity work.enemy(arch)
@@ -507,7 +542,7 @@ begin
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
 			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on=>ship_enemy_on(0), led=>hit_by_enemy(0),
-			enemy_hit_on=>enemy_hit(0));
+			enemy_hit_on=>enemy_hit(0), enemy_rgb=>enemy1_rgb, level_up => level_up(0));
 			
 	-- 2nd enemy instantiation
 	enemy_2: entity work.enemy(arch)
@@ -518,7 +553,7 @@ begin
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
 			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(1), led=>hit_by_enemy(1),
-			enemy_hit_on=>enemy_hit(1));
+			enemy_hit_on=>enemy_hit(1), enemy_rgb=>enemy2_rgb,level_up => level_up(1));
 			
 	-- 3rd enemy instantiation
 	enemy_3: entity work.enemy(arch)
@@ -529,7 +564,7 @@ begin
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
 			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(2), led=>hit_by_enemy(2),
-			enemy_hit_on=>enemy_hit(2));
+			enemy_hit_on=>enemy_hit(2), enemy_rgb=>enemy3_rgb, level_up => level_up(2));
 			
 	-- 4th enemy instantiation
 	enemy_4: entity work.enemy(arch)
@@ -540,14 +575,13 @@ begin
 			ship_main_x_r=>std_logic_vector(ship_main_x_r), bullet_y_t=>std_logic_vector(bullet_y_t),
 			bullet_y_b=>std_logic_vector(bullet_y_b), bullet_x_l=>std_logic_vector(bullet_x_l),
 			bullet_x_r=>std_logic_vector(bullet_x_r), ship_enemy_on => ship_enemy_on(3), led=>hit_by_enemy(3),
-			enemy_hit_on=>enemy_hit(3));
+			enemy_hit_on=>enemy_hit(3), enemy_rgb=>enemy4_rgb,level_up => level_up(3));
 			
-	ship_enemy_rgb <= "00000000"; -- color of the enemy ship
 	ship_main_hit <= hit_by_enemy(0) or hit_by_enemy(1) or hit_by_enemy(2) or hit_by_enemy(3);
 	
 	-- instantiate text	
 	text_unit: entity work.game_text
-      port map(clk=>clk,reset=>reset,pixel_x=>pixel_x, pixel_y=>pixel_y,
+      port map(clk=>clk,pixel_x=>pixel_x, pixel_y=>pixel_y,
                dig0=>dig0, dig1=>dig1,text_on=>text_on, text_rgb=>text_rgb);
 			 
  -- instantiate 2-digit decade counter
@@ -556,19 +590,25 @@ begin
 
 			   
 	-- output logic
-	process (video_on, ship_main_on, ship_rgb, ship_enemy_on, ship_enemy_rgb, 
-				rd_bullet_on, bullet_rgb,text_on,text_rgb, gameover_on, welcome_on)
+	process (video_on, ship_main_on, rom_data, ship_enemy_on, enemy1_rgb, enemy2_rgb, 
+				enemy3_rgb, enemy4_rgb, rd_bullet_on, bullet_rgb,text_on,text_rgb, 
+				gameover_on, welcome_on)
 	begin
 		if (video_on = '0') then
 			graph_rgb <= (others=>'0'); -- blank
 		else -- priority encoding implicit here
 			if (ship_main_on='1') then
-				graph_rgb <= ship_rgb;
+				graph_rgb <= rom_data(1 downto 0) & rom_data(4 downto 2) & rom_data(7 downto 5);
 			elsif (rd_bullet_on='1') then
 				graph_rgb <= bullet_rgb;			
-			elsif (ship_enemy_on(0)='1') or (ship_enemy_on(1)='1') or (ship_enemy_on(2)='1') or 
-					(ship_enemy_on(3)='1') then
-				graph_rgb <= ship_enemy_rgb;
+			elsif ship_enemy_on(0) = '1' then 
+					graph_rgb <= enemy1_rgb(1 downto 0) & enemy1_rgb(4 downto 2) & enemy1_rgb(7 downto 5);
+			elsif ship_enemy_on(1) = '1' then
+					graph_rgb <= enemy2_rgb(1 downto 0) & enemy2_rgb(4 downto 2) & enemy2_rgb(7 downto 5);
+			elsif ship_enemy_on(2) = '1' then
+					graph_rgb <= enemy3_rgb(1 downto 0) & enemy3_rgb(4 downto 2) & enemy3_rgb(7 downto 5);
+			elsif ship_enemy_on(3) = '1' then
+					graph_rgb <= enemy4_rgb(1 downto 0) & enemy4_rgb(4 downto 2) & enemy4_rgb(7 downto 5);
 			elsif(text_on(3)='1') and (welcome_on /= '1') and (gameover_on /='1') then
 				graph_rgb <= "00000" & text_rgb;
 			elsif(text_on(2)='1') and (welcome_on = '1') then

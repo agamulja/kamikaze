@@ -16,7 +16,9 @@ entity enemy is
 		bullet_x_l, bullet_x_r: in std_logic_vector(9 downto 0);
 		ship_enemy_on: out std_logic;
 		enemy_hit_on: out std_logic;
-		led: out std_logic
+		level_up: in std_logic;
+		led: out std_logic;
+		enemy_rgb: out std_logic_vector(7 downto 0)
 	);
 end enemy;
 
@@ -27,8 +29,9 @@ architecture arch of enemy is
 	constant MAX_Y: integer := 480;
 	constant SHIP_V: integer := 1;
 	constant SHIP_SIZE: integer := 22;
-	constant ROM_ADDR_SIZE: integer := 8;	--	size of rom_addr (bits)
+	constant ROM_ADDR_SIZE: integer := 12;	--	size of rom_addr (bits)
 	constant ROM_COL_SIZE: integer := 5;	-- size of rom_col signal used to access every column
+	constant ROM_MULTI: integer := 484;
 	
 	-- x, y coordinates (0,0) to (639, 479)
 	signal pix_x, pix_y: unsigned(9 downto 0);
@@ -48,9 +51,9 @@ architecture arch of enemy is
 	--Enemy ship rom address
 	signal rom_addr: std_logic_vector(ROM_ADDR_SIZE-1 downto 0);	
 	signal rom_addr_num: unsigned(ROM_ADDR_SIZE-1 downto 0);
-	signal rom_col: unsigned(ROM_COL_SIZE-1 downto 0);
-	signal rom_data: std_logic_vector(SHIP_SIZE-1 downto 0);
-	signal rom_bit: std_logic;
+	-- signal rom_col: unsigned(ROM_COL_SIZE-1 downto 0);
+	signal rom_data: std_logic_vector(7 downto 0);
+	signal pixel_byte: std_logic;
 	
 	-- FSMD states, registers and signals for use in the tracking algorithm
 	type state_type is (idle, move_right, move_45_degree, move_up, move_135_degree,
@@ -115,47 +118,47 @@ begin
 			douta => rom_data);
 			
 	-- select row from Enemy ROM
-	process (ship_enemy_orient_reg, sq_ship_enemy_on, pix_y, ship_enemy_y_t)
+	process (ship_enemy_orient_reg, sq_ship_enemy_on, pix_y, pix_x, ship_enemy_y_t, ship_enemy_x_l)
 	begin
 		rom_addr_num <= (others=>'0');
 		if sq_ship_enemy_on = '1' then
 			case ship_enemy_orient_reg is
 				when "000" =>
-					rom_addr_num <= resize(pix_y-ship_enemy_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(SHIP_SIZE*(pix_y - ship_enemy_y_t) + pix_x - ship_enemy_x_l, ROM_ADDR_SIZE);
 				
 				when "001" =>
-					rom_addr_num <= SHIP_SIZE + resize(pix_y-ship_enemy_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(ROM_MULTI + SHIP_SIZE*(pix_y - ship_enemy_y_t) + pix_x - ship_enemy_x_l, ROM_ADDR_SIZE);
 					
 				when "010" =>
-					rom_addr_num <= SHIP_SIZE*2 + resize(pix_y-ship_enemy_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(2*ROM_MULTI + SHIP_SIZE*(pix_y - ship_enemy_y_t) + pix_x - ship_enemy_x_l, ROM_ADDR_SIZE);
 					
 				when "011" =>
-					rom_addr_num <= SHIP_SIZE*3 + resize(pix_y-ship_enemy_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(3*ROM_MULTI + SHIP_SIZE*(pix_y - ship_enemy_y_t) + pix_x - ship_enemy_x_l, ROM_ADDR_SIZE);
 					
 				when "100" =>
-					rom_addr_num <= SHIP_SIZE*4 + resize(pix_y-ship_enemy_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(4*ROM_MULTI + SHIP_SIZE*(pix_y - ship_enemy_y_t) + pix_x - ship_enemy_x_l, ROM_ADDR_SIZE);
 				
 				when "101" =>
-					rom_addr_num <= SHIP_SIZE*5 + resize(pix_y-ship_enemy_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(5*ROM_MULTI + SHIP_SIZE*(pix_y - ship_enemy_y_t) + pix_x - ship_enemy_x_l, ROM_ADDR_SIZE);
 				
 				when "110" =>
-					rom_addr_num <= SHIP_SIZE*6 + resize(pix_y-ship_enemy_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(6*ROM_MULTI + SHIP_SIZE*(pix_y - ship_enemy_y_t) + pix_x - ship_enemy_x_l, ROM_ADDR_SIZE);
 				
 				when others =>
-					rom_addr_num <= SHIP_SIZE*7 + resize(pix_y-ship_enemy_y_t, ROM_ADDR_SIZE);
+					rom_addr_num <= resize(7*ROM_MULTI + SHIP_SIZE*(pix_y - ship_enemy_y_t) + pix_x - ship_enemy_x_l, ROM_ADDR_SIZE);
 			end case;
 		end if;
 	end process;
 
 	-- enemy ship access bit 
 	rom_addr <= std_logic_vector(rom_addr_num);
-	rom_col <= resize(pix_x-ship_enemy_x_l, ROM_COL_SIZE) when sq_ship_enemy_on = '1' else (others=>'0');
-	rom_bit <= rom_data(to_integer(SHIP_SIZE-1-rom_col));
+	-- rom_col <= resize(pix_x-ship_enemy_x_l, ROM_COL_SIZE) when sq_ship_enemy_on = '1' else (others=>'0');
+	pixel_byte <= '1' when (rom_data /= x"00") else '0';
 	
 	
 	-- signals to use in the tracking algorithm
-	pix_x_main <= unsigned(ship_main_x_l) + (SHIP_SIZE/2)-1; 	-- center x pixel of main ship
-	pix_y_main <= unsigned(ship_main_y_t) + (SHIP_SIZE/2)-1; 	-- center y pixel of main ship
+	pix_x_main <= unsigned(ship_main_x_l) + 26; 	-- center x pixel of main ship
+	pix_y_main <= unsigned(ship_main_y_t) + 26; 	-- center y pixel of main ship
 	pix_x_enemy <= ship_enemy_x_reg + (SHIP_SIZE/2)-1; 		-- center x pixel of enemy ship
 	pix_y_enemy <= ship_enemy_y_reg + (SHIP_SIZE/2)-1;			-- center y pixel of enemy ship
 	
@@ -196,7 +199,7 @@ begin
 	-- Process the tracking algorithm using FSMD
 	process(state_reg, start, reset_all, ship_main_region, ship_enemy_x_reg, ship_enemy_y_reg,
 			  ship_enemy_orient_reg, min_dist_reg, dist_reg, min_dist_next, dist_next, 
-			  pix_x_main, pix_x_enemy,	pix_y_main, pix_y_enemy, ship_main_hit, enemy_hit_reg)
+			  pix_x_main, pix_x_enemy,	pix_y_main, pix_y_enemy, ship_main_hit, enemy_hit_reg,level_up)
 			  
 	begin
 	
@@ -223,8 +226,10 @@ begin
 						state_next <= idle;
 					elsif (enemy_hit_reg='1') then
 						state_next <= idle;
-						ship_enemy_x_next <= unsigned(X);
-						ship_enemy_y_next <= unsigned(Y);
+						if(level_up='1') then
+							ship_enemy_x_next <= unsigned(X);
+							ship_enemy_y_next <= unsigned(Y);
+						end if;
 					else
 					
 						case ship_main_region is	
@@ -260,8 +265,10 @@ begin
 				end if;
 				
 			when move_right =>
-				if (ship_enemy_orient_reg=2) then 
-					ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
+				if (ship_enemy_orient_reg=2) then
+					if(level_up='1') then
+						ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
+					end if;
 				else
 					ship_enemy_orient_next <= "010";
 				end if;
@@ -269,8 +276,10 @@ begin
 				
 			when move_45_degree =>
 				if (ship_enemy_orient_reg=1) then
-					ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
-					ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+					if(level_up='1') then
+						ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
+						ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+					end if;
 				else
 					ship_enemy_orient_next <= "001";
 				end if;
@@ -278,7 +287,9 @@ begin
 				
 			when move_up =>
 				if (ship_enemy_orient_reg=0) then
-					ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+					if(level_up='1') then
+						ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+					end if;
 				else
 					ship_enemy_orient_next <= "000";
 				end if;
@@ -286,8 +297,10 @@ begin
 				
 			when move_135_degree =>
 				if (ship_enemy_orient_reg=7) then
-					ship_enemy_x_next <= ship_enemy_x_reg - SHIP_V;
-					ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+					if(level_up='1') then
+						ship_enemy_x_next <= ship_enemy_x_reg - SHIP_V;
+						ship_enemy_y_next <= ship_enemy_y_reg - SHIP_V;
+					end if;
 				else
 					ship_enemy_orient_next <= "111";
 				end if;
@@ -295,7 +308,9 @@ begin
 				
 			when move_left =>
 				if (ship_enemy_orient_reg=6) then
+					if(level_up='1') then
 					ship_enemy_x_next <= ship_enemy_x_reg - SHIP_V;
+					end if;
 				else
 					ship_enemy_orient_next <= "110";
 				end if;
@@ -303,8 +318,10 @@ begin
 				
 			when move_225_degree =>
 				if (ship_enemy_orient_reg=5) then
-					ship_enemy_x_next <= ship_enemy_x_reg - SHIP_V;
-					ship_enemy_y_next <= ship_enemy_y_reg + SHIP_V;
+					if(level_up='1') then
+						ship_enemy_x_next <= ship_enemy_x_reg - SHIP_V;
+						ship_enemy_y_next <= ship_enemy_y_reg + SHIP_V;
+					end if;
 				else 
 					ship_enemy_orient_next <= "101";
 				end if;
@@ -312,7 +329,9 @@ begin
 				
 			when move_down =>
 				if (ship_enemy_orient_reg=4) then
-					ship_enemy_y_next <= ship_enemy_y_reg + SHIP_V;
+					if(level_up='1') then
+						ship_enemy_y_next <= ship_enemy_y_reg + SHIP_V;
+					end if;
 				else
 					ship_enemy_orient_next <= "100";
 				end if;
@@ -320,8 +339,10 @@ begin
 				
 			when move_315_degree =>
 				if (ship_enemy_orient_reg=3) then
-					ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
-					ship_enemy_y_next <= ship_enemy_y_reg + SHIP_V;
+					if(level_up='1') then
+						ship_enemy_x_next <= ship_enemy_x_reg + SHIP_V;
+						ship_enemy_y_next <= ship_enemy_y_reg + SHIP_V;
+					end if;
 				else
 					ship_enemy_orient_next <= "011";
 				end if;
@@ -455,7 +476,8 @@ begin
 	end process;
 	
 	-- Outputs
-	ship_enemy_on <= '1' when (sq_ship_enemy_on = '1') and (rom_bit = '1') else '0';
+	ship_enemy_on <= '1' when (sq_ship_enemy_on='1') and (pixel_byte='1') and (level_up ='1') else '0';
+	enemy_rgb <= rom_data;
 	led <= '1' when (ship_main_hit='1') else '0';
 	enemy_hit_on <= enemy_hit_reg;
 	

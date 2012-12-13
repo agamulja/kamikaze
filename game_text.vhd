@@ -4,7 +4,7 @@ use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 entity game_text is
    port(
-      clk, reset: in std_logic;
+      clk: in std_logic;
       pixel_x, pixel_y: in std_logic_vector(9 downto 0);
 		dig0, dig1: in std_logic_vector(3 downto 0);
       text_on: out std_logic_vector(3 downto 0);
